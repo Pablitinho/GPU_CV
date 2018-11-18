@@ -37,7 +37,7 @@ int main(void)
     Mat im_gray_host(im_rgb_host.rows , im_rgb_host.cols, CV_8UC(1));
     //-----------------------------------------------------------------------------------------------------------------
     TGpuMem::TGpuMemUChar * im_rgb_device= new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows,3);
-	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 3);
+	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 1);
     //-----------------------------------------------------------------------------------------------------------------
 
     float elapsed=0;
@@ -47,12 +47,9 @@ int main(void)
 	// Copy data from Host to Device
 	im_rgb_device->CopyToDevice(im_rgb_host.data);
 
-
-
 	// Convert from RGB to GRAY
 	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device, im_gray_device);
 
-	im_gray_device->Init(0);
 	// Copy data from Device to Host
 	im_gray_host.data = im_gray_device->CopyFromDevice();
 
@@ -63,9 +60,9 @@ int main(void)
     //-----------------------------------------------------------------
 	// Display image
 	//-----------------------------------------------------------------
-    namedWindow( "Display window 1", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window 1", im_gray_host);                   // Show our image inside it.
-    moveWindow("Display window 1", 200, 200);
+    namedWindow( "Image Gray", WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Image Gray", im_gray_host);                   // Show our image inside it.
+    moveWindow("Image Gray", 200, 200);
 
 	waitKey(0);
     //-----------------------------------------------------------

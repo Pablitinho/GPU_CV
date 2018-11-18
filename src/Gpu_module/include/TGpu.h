@@ -32,6 +32,7 @@ public:
 	float StopMeasurement();
 	
 	void SetCacheConfig(CacheConfig config);
+	void GetMemoryInfo(size_t * FreeMemory,size_t *TotalMemory);
     ~TGpu();
 
     TCV * CV;

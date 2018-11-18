@@ -2,16 +2,7 @@
 //   This Class handles the GPU memory
 //   Created on: 18/02/2015
 //   Author: Pablo Guzman
-//--------------------------------------------------------------------------
-// Macro to check Errors
-//--------------------------------------------------------------------------
-#define CUDA_CHECK_RETURN(value) {											\
-	cudaError_t _m_cudaStat = value;										\
-	if (_m_cudaStat != cudaSuccess) {										\
-		fprintf(stderr, "Error %s at line %d in file %s\n",					\
-				cudaGetErrorString(_m_cudaStat), __LINE__, __FILE__);		\
-		exit(1);															\
-	} }
+
 //--------------------------------------------------------------------------
 #include "TGpu.h"
 #include <iostream>
@@ -19,6 +10,7 @@
 #include <stdlib.h>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include "defines.h"
 
 using namespace std;
 //--------------------------------------------------------------------------
@@ -109,35 +101,40 @@ int TGpu::GetBlockY() { return BlockY; }
 //--------------------------------------------------------------------------
 void TGpu::InitTimer()
 {
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	CUDA_CHECK_RETURN(cudaEventCreate(&start));
+	CUDA_CHECK_RETURN(cudaEventCreate(&stop));
 }
 //--------------------------------------------------------------------------
 void TGpu::StartMeasurement()
 {
-	cudaEventRecord(start, 0);
+	CUDA_CHECK_RETURN(cudaEventRecord(start, 0));
 }
 //--------------------------------------------------------------------------
 float TGpu::StopMeasurement()
 {
 	float elapsed;
-	cudaEventRecord(stop, 0);
-	cudaEventSynchronize(stop);
-	cudaEventElapsedTime(&elapsed, start, stop);
+	CUDA_CHECK_RETURN(cudaEventRecord(stop, 0));
+	CUDA_CHECK_RETURN(cudaEventSynchronize(stop));
+	CUDA_CHECK_RETURN(cudaEventElapsedTime(&elapsed, start, stop));
 
 	return elapsed;
 }
 //--------------------------------------------------------------------------
 void TGpu::DestroyTimer()
 {
-	cudaEventDestroy(start);
-	cudaEventDestroy(stop);
+	CUDA_CHECK_RETURN(cudaEventDestroy(start));
+	CUDA_CHECK_RETURN(cudaEventDestroy(stop));
 }
 //--------------------------------------------------------------------------
 void TGpu::SetCacheConfig(CacheConfig config)
 {
 	cudaFuncCache Config_device = (cudaFuncCache)config;
-	cudaDeviceSetCacheConfig(Config_device);
+	CUDA_CHECK_RETURN(cudaDeviceSetCacheConfig(Config_device));
+}
+//--------------------------------------------------------------------------
+void TGpu::GetMemoryInfo(size_t * FreeMemory, size_t *TotalMemory)
+{
+	CUDA_CHECK_RETURN(cudaMemGetInfo(FreeMemory,TotalMemory));
 }
 //--------------------------------------------------------------------------
 TGpu::~TGpu()
