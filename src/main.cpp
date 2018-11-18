@@ -25,6 +25,8 @@ int main(void)
 
 	TGpu *myGpu = new TGpu(16,8);
 
+	myGpu->SetCacheConfig(CacheConfig::PreferL1);
+
     cout << "Num of Gpus: "<<myGpu->CountGPUs() <<endl;
 	myGpu->PrintProperties(0);
 

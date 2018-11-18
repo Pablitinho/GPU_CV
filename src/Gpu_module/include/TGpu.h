@@ -11,6 +11,8 @@
 #include "TCV.h"
 #include "shared_EXPORTS.h"
 
+enum CacheConfig { DefaultCache=0, PreferShared=1, PreferL1=2, Equal=3};
+
 class SHARED_EXPORT TGpu {
 public:
 
@@ -28,6 +30,7 @@ public:
 	void StartMeasurement();
 	float StopMeasurement();
 	
+	void SetCacheConfig(CacheConfig config);
     ~TGpu();
 
     TCV * CV;

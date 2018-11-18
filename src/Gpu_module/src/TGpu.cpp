@@ -126,6 +126,12 @@ void TGpu::DestroyTimer()
 	cudaEventDestroy(stop);
 }
 //--------------------------------------------------------------------------
+void TGpu::SetCacheConfig(CacheConfig config)
+{
+	cudaFuncCache Config_device = (cudaFuncCache)config;
+	cudaDeviceSetCacheConfig(Config_device);
+}
+//--------------------------------------------------------------------------
 TGpu::~TGpu()
 {
 	DestroyTimer();
