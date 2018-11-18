@@ -3,6 +3,8 @@
 #include "TGpu.h"
 #include "TMathUtils.h"
 #include "types_cc.h"
+#include <typeinfo>
+
 //==========================================================================
 // Kernels
 //==========================================================================
@@ -315,88 +317,35 @@ __global__ void CastingUint_Kernel(void * img_src, void * img_dst, uint src_type
 	}
 }
 //-----------------------------------------------------------------------------------------
-__global__ void Init_int_Kernel(int * img_dst, int Value, int Width, int Height)
-{
-	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
-	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
-	int GlobalOffset = (globalY * Width + globalX);
-    //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-    {
-		img_dst[GlobalOffset]=Value;
-	}
-}
-//-----------------------------------------------------------------------------------------
-__global__ void Init_float_Kernel(float * img_dst, float Value, int Width, int Height)
-{
-	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
-	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
-	int GlobalOffset = (globalY * Width + globalX);
-    //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-    {
-		img_dst[GlobalOffset]=Value;
-	}
-}
-//-----------------------------------------------------------------------------------------
 __global__ void Init_half_float_Kernel(unsigned short * img_dst, float Value, int Width, int Height)
 {
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
 	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
 	int OffsetIm = (globalY * Width + globalX);
     //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
+	if (globalX<(Width) && globalY<(Height))
     {
 		img_dst[OffsetIm]=__float2half_rn(Value);
 	}
 }
 //-----------------------------------------------------------------------------------------
-__global__ void Init_double_Kernel(double * img_dst, double Value, int Width, int Height)
+template <typename T> __global__ void Init_Kernel_T(T * img_dst, T Value, int Width, int Height)
 {
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
 	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
 	int OffsetIm = (globalY * Width + globalX);
-    //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-    {
-		img_dst[OffsetIm]=Value;
+	//------------------------------------------------------------------
+	if (globalX < (Width) && globalY < (Height))
+	{
+		img_dst[OffsetIm] = Value;
 	}
 }
-//-----------------------------------------------------------------------------------------
-__global__ void Init_uint_Kernel(unsigned int * img_dst, unsigned int Value, int Width, int Height)
-{
-	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
-	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
-	int OffsetIm = (globalY * Width + globalX);
-    //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-    {
-		img_dst[OffsetIm]=Value;
-	}
-}
-//-----------------------------------------------------------------------------------------
-__global__ void Init_uchar_Kernel(unsigned char * img_dst, unsigned char Value, int Width, int Height)
-{
-	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
-	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
-	int OffsetIm = (globalY * Width + globalX);
-    //------------------------------------------------------------------
-	if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-    {
-		img_dst[OffsetIm]=Value;
-	}
-}
-//-----------------------------------------------------------------------------------------
 //==========================================================================
-
 // End Kernels
-
 //==========================================================================
 
 //==========================================================================
-
 // Int
-
 //==========================================================================
 TGpuMem::TGpuMemInt::TGpuMemInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uint)
 {
@@ -431,7 +380,7 @@ void TGpuMem::TGpuMemInt::Init(int value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_int_Kernel<<<numBlocks, numThreads>>>((int *)d_Mem, value, d_Width, d_Height);
+	Init_Kernel_T<int><< <numBlocks, numThreads >> > ((int *)d_Mem, value, d_Width, d_Height);
     cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
@@ -472,9 +421,7 @@ TGpuMem::TGpuMemInt::~TGpuMemInt()
 
 }
 //==========================================================================
-
 // UInt
-
 //==========================================================================
 TGpuMem::TGpuMemUInt::TGpuMemUInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uint)
 {
@@ -509,7 +456,7 @@ void TGpuMem::TGpuMemUInt::Init(unsigned int value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_uint_Kernel<<<numBlocks, numThreads>>>((unsigned int *)d_Mem, value, d_Width, d_Height);
+	Init_Kernel_T<unsigned int> << <numBlocks, numThreads >> > ((unsigned int *)d_Mem, value, d_Width, d_Height);
     cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
@@ -551,10 +498,9 @@ TGpuMem::TGpuMemUInt::~TGpuMemUInt()
 
 }
 //-----------------------------------------------------------------------------------------
+
 //==========================================================================
-
 // Float
-
 //==========================================================================
 TGpuMem::TGpuMemFloat::TGpuMemFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_float)
 {
@@ -589,7 +535,7 @@ void TGpuMem::TGpuMemFloat::Init(float value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_float_Kernel<<<numBlocks, numThreads>>>((float *)d_Mem, value, d_Width, d_Height);
+	Init_Kernel_T<float> << <numBlocks, numThreads >> > ((float *)d_Mem, value, d_Width, d_Height);
     cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
@@ -630,9 +576,7 @@ TGpuMem::TGpuMemFloat::~TGpuMemFloat()
 
 }
 //==========================================================================
-
 // Half float
-
 //==========================================================================
 TGpuMem::TGpuMemHalfFloat::TGpuMemHalfFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_half_float)
 {
@@ -680,7 +624,7 @@ void TGpuMem::TGpuMemHalfFloat::Init(float value)
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
     Init_half_float_Kernel<<<numBlocks, numThreads>>>((unsigned short *)d_Mem, value, d_Width, d_Height);
-    cudaThreadSynchronize();
+	cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
 void TGpuMem::TGpuMemHalfFloat::Copy(TGpuMemHalfFloat * MemDst)
@@ -724,9 +668,7 @@ TGpuMem::TGpuMemHalfFloat::~TGpuMemHalfFloat()
 
 }
 //==========================================================================
-
 // Unsigned Char
-
 //==========================================================================
 TGpuMem::TGpuMemUChar::TGpuMemUChar(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uchar)
 {
@@ -786,7 +728,7 @@ void TGpuMem::TGpuMemUChar::Init(unsigned char value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_uchar_Kernel<<<numBlocks, numThreads>>>((unsigned char *)d_Mem, value, d_Width, d_Height);
+	Init_Kernel_T<unsigned char> << <numBlocks, numThreads >> > ((unsigned char *)d_Mem, value, d_Width, d_Height);
     cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
@@ -802,11 +744,9 @@ TGpuMem::TGpuMemUChar::~TGpuMemUChar()
 {
 
 }
+//-----------------------------------------------------------------------------------------
 //==========================================================================
-//==========================================================================
-
 // Double
-
 //==========================================================================
 TGpuMem::TGpuMemDouble::TGpuMemDouble(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uchar)
 {
@@ -841,7 +781,8 @@ void TGpuMem::TGpuMemDouble::Init(double value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_double_Kernel<<<numBlocks, numThreads>>>((double *)d_Mem, value, d_Width, d_Height);
+	Init_Kernel_T<double> << <numBlocks, numThreads >> > ((double *)d_Mem, value, d_Width, d_Height);
+    
     cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
@@ -858,6 +799,7 @@ void TGpuMem::TGpuMemDouble::WriteFileFromDevice(const char * File)
 	TMathUtils * myUtils = new TMathUtils();
 	ofstream outfile;
     outfile.open(File);
+
     double * h_Mem = (double*)CopyFromDevice();
 
     if (outfile.is_open())
@@ -869,7 +811,6 @@ void TGpuMem::TGpuMemDouble::WriteFileFromDevice(const char * File)
 			      outfile << h_Mem[r*d_Width+c];
 
 				outfile << " ";
-				//cout << (int)h_Mem[r*d_Width+c];
 			}
 			outfile << endl;
 		}
@@ -882,10 +823,11 @@ TGpuMem::TGpuMemDouble::~TGpuMemDouble()
 {
 
 }
+//-----------------------------------------------------------------------------------------
 //==========================================================================
 // Core Mem
-
 //==========================================================================
+
 //--------------------------------------------------------------------------
 TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channels,int MemType_)
 {
@@ -1056,6 +998,7 @@ void TGpuMem::TGpuCoreMem::Casting(TGpuCoreMem * dst_Mem)
 	enum { t_int = 0, t_float = 1, t_uchar = 2, t_half_float = 3, t_double = 4, t_uint = 5};
     switch(d_MemType)
     {
+		
     	case 0: {//int
     		      CastingInt_Kernel<<<numBlocks, numThreads>>>(d_Mem, dst_Mem->d_Mem, (int)d_MemType, (int)dst_Mem->d_MemType,d_Width, d_Height);
     		      break;
@@ -1080,6 +1023,7 @@ void TGpuMem::TGpuCoreMem::Casting(TGpuCoreMem * dst_Mem)
         	      CastingUint_Kernel<<<numBlocks, numThreads>>>(d_Mem, dst_Mem->d_Mem, (int)d_MemType, (int)dst_Mem->d_MemType,d_Width, d_Height);
     		      break;
     		    }
+				
     }
 
 	cudaThreadSynchronize();

@@ -21,6 +21,7 @@ public:
 	void PrintProperties(int Device_Num);
 	void GetLastError();
 	void SetDevice(int DevNum);
+	int GetDevice();
 	void ResetDevice();
 	int  iDivUp(int a, int b);
 	void SetBlockSize(int Block_X,int Block_Y);

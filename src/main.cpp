@@ -28,6 +28,8 @@ int main(void)
 	myGpu->SetCacheConfig(CacheConfig::PreferL1);
 
     cout << "Num of Gpus: "<<myGpu->CountGPUs() <<endl;
+	cout << "Device ID: " << myGpu->GetDevice() << endl;
+	
 	myGpu->PrintProperties(0);
 
     Mat im_rgb_host = imread("C:\\Work\\GPU_CV\\data\\denso.png", CV_LOAD_IMAGE_COLOR);
@@ -45,9 +47,12 @@ int main(void)
 	// Copy data from Host to Device
 	im_rgb_device->CopyToDevice(im_rgb_host.data);
 
+
+
 	// Convert from RGB to GRAY
 	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device, im_gray_device);
 
+	im_gray_device->Init(0);
 	// Copy data from Device to Host
 	im_gray_host.data = im_gray_device->CopyFromDevice();
 

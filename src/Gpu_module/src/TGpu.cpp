@@ -79,6 +79,14 @@ void TGpu::SetDevice(int DevNum)
 	CUDA_CHECK_RETURN(cudaSetDevice(DevNum));
 }
 //--------------------------------------------------------------------------
+int TGpu::GetDevice()
+{
+	int device_id;
+	CUDA_CHECK_RETURN(cudaGetDevice(&device_id));
+
+	return device_id;
+}
+//--------------------------------------------------------------------------
 void TGpu::ResetDevice()
 {
 	CUDA_CHECK_RETURN(cudaDeviceReset());
