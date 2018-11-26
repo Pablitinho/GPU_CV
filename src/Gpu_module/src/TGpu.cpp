@@ -14,13 +14,15 @@
 
 using namespace std;
 //--------------------------------------------------------------------------
-TGpu::TGpu(int Block_X,int Block_Y)
+TGpu::TGpu(int device_id, int Block_X,int Block_Y)
 {
 	BlockX = Block_X;
     BlockY = Block_Y;
-	CV = new TCV(this);
+	Allow_zero_copy();
+	
+	this->SetDevice(device_id);
 
-	support_zero_copy = false;
+	CV = new TCV(this);
 
 	InitTimer();
 }
@@ -30,8 +32,9 @@ bool TGpu::Allow_zero_copy()
 	bool success = false;
 
 	cudaDeviceProp prop;
+	int dev_id = this->GetDevice();
 
-	CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, this->GetDevice()));
+	CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, dev_id));
 
 	if (prop.canMapHostMemory == 1) 
 	{
@@ -41,7 +44,7 @@ bool TGpu::Allow_zero_copy()
 	}
 	else 
 	{
-		printf("Function not supported \n");
+		printf("Zero Copy not supported \n");
 		success = false;
 		support_zero_copy = false;
 	}
