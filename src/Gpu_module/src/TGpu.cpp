@@ -67,12 +67,12 @@ void TGpu::PrintProperties(int Device_Num)
 
 	cout << "--- General Information for device ... " << Device_Num << endl;
 	cout << "Name: " << prop.name << endl;
-	cout << "Compute capability: " << prop.major << " "<< prop.minor << endl;
+	cout << "Compute capability: " << prop.major << "."<< prop.minor << endl;
 	cout << "Clock rate: " << prop.clockRate << endl;
 	cout << "Device copy overlap: ";
 	if (prop.deviceOverlap) cout << "Enabled" << endl;
 	else cout << "Disabled" << endl;
-	cout << "Kernel execition timeout : ";
+	cout << "Kernel execution timeout : ";
 	if (prop.kernelExecTimeoutEnabled) cout << "Enabled" << endl;
 	else cout << "Disabled" << endl;
 	cout << "--- Memory Information for device "<< Device_Num << endl;
