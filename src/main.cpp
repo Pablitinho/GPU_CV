@@ -22,12 +22,11 @@ using namespace cv;
 //--------------------------------------------------------------------------
 int main(void)
 {
-
 	TGpu *myGpu = new TGpu(16,8);
 
 	myGpu->SetDevice(0);
 	myGpu->SetCacheConfig(CacheConfig::PreferL1);
-	
+
     cout << "Num of Gpus: "<<myGpu->CountGPUs() <<endl;
 	cout << "Device ID: " << myGpu->GetDevice() << endl;
 	

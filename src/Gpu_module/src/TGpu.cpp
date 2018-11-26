@@ -18,10 +18,10 @@ TGpu::TGpu(int Block_X,int Block_Y)
 {
 	BlockX = Block_X;
     BlockY = Block_Y;
-	Allow_zero_copy();
 	
+	Allow_zero_copy();
 	CV = new TCV(this);
-
+	
 	InitTimer();
 }
 //--------------------------------------------------------------------------
@@ -30,6 +30,7 @@ bool TGpu::Allow_zero_copy()
 	bool success = false;
 
 	cudaDeviceProp prop;
+
 	int dev_id = this->GetDevice();
 
 	CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, dev_id));

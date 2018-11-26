@@ -17,7 +17,6 @@ class SHARED_EXPORT TGpu {
 public:
 
     TGpu(int Block_X,int Block_Y);
-	
     int CountGPUs();
 	void PrintProperties(int Device_Num);
 	void GetLastError();
