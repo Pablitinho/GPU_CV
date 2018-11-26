@@ -506,7 +506,7 @@ void TCVMath::MaxMinAvg(TGpuMem::TGpuMemHalfFloat * MemSrc,float &Max,float &Min
 
      //TGpuMem::TGpuMemHalfFloat *MemoryInputAux = new TGpuMem::TGpuMemHalfFloat(Gpu, (uint)pow(2.0, (double)MemAuxWidth),(uint)pow(2.0, (double)MemAuxHeight),1);
 
-     TGpuMem::TGpuMemHalfFloat *MemoryInputAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSrc->Width(),MemSrc->Height(),1);
+     TGpuMem::TGpuMemHalfFloat *MemoryInputAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSrc->Width(),MemSrc->Height(),1, false);
 
      MemSrc->Copy(MemSrc);
 
@@ -538,9 +538,9 @@ void TCVMath::MaxMinAvg(TGpuMem::TGpuMemHalfFloat * MemSrc,float &Max,float &Min
              numThreads = dim3(BlockSize, 1, 1);
              numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(MemSizeAnt, numThreads.x), 1, numThreads.y);
          }
-         MaxMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1);
-         MinMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1);
-         AvgMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1);
+         MaxMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1, false);
+         MinMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1, false);
+         AvgMem = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSize, 1,1, false);
          //----------------------------------------------
          // Set Arguments
          //----------------------------------------------
@@ -575,9 +575,9 @@ void TCVMath::MaxMinAvg(TGpuMem::TGpuMemHalfFloat * MemSrc,float &Max,float &Min
             	 delete AvgMemAux;
              }
 
-             MaxMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1);
-             MinMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1);
-             AvgMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1);
+             MaxMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1, false);
+             MinMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1, false);
+             AvgMemAux = new TGpuMem::TGpuMemHalfFloat(Gpu, MemSizeAnt, 1,1, false);
 
              MaxMem->Copy(MaxMemAux);
              MinMem->Copy(MinMemAux);

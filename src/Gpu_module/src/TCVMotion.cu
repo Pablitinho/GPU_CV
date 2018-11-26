@@ -840,100 +840,100 @@ void TCVMotion::InitPyramid(int NumScalesMax,int MinSize,float Factor,uint Width
 
 	 for (int i=0;i<NumScales;i++)
 	 {
-		 MemUPrev[i]= new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemUPrev[i]= new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemUPrev[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemVPrev[i]= new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemVPrev[i]= new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemVPrev[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemPyrIm1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemPyrIm1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemPyrIm1[i]->Init((unsigned char)0);
 		 //---------------------------------------------------------------------------
-		 MemPyrIm2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemPyrIm2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemPyrIm2[i]->Init((unsigned char)0);
 		 //---------------------------------------------------------------------------
-		 MemPyrIm2Warped[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemPyrIm2Warped[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemPyrIm2Warped[i]->Init((unsigned char)0);
 		 //---------------------------------------------------------------------------
-		 MemPyrG[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemPyrG[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemPyrG[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemP1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemP1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemP1[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemP2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemP2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemP2[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemP3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemP3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemP3[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemP4[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemP4[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemP4[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemAPP1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemAPP1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemAPP1[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemAPP2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemAPP2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemAPP2[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemAPP3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemAPP3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemAPP3[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemAPP4[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemAPP4[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemAPP4[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemDivx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemDivx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemDivx[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemDivy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemDivy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemDivy[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemCensus1[i] = new TGpuMem::TGpuMemUInt(Gpu,(uint)Width,(uint)Height,1);
+		 MemCensus1[i] = new TGpuMem::TGpuMemUInt(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemCensus1[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemCensus2[i] = new TGpuMem::TGpuMemUInt(Gpu,(uint)Width,(uint)Height,1);
+		 MemCensus2[i] = new TGpuMem::TGpuMemUInt(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemCensus2[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemIx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemIx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemIx[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemIy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemIy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemIy[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemIt[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemIt[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemIt[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemU[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemU[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemU[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemV[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemV[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemV[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemU0[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemU0[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemU0[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemV0[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemV0[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemV0[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemUp[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemUp[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemUp[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemVp[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemVp[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemVp[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemNx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemNx[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemNx[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemNy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemNy[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemNy[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemHFAux1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemHFAux1[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemHFAux1[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemHFAux2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemHFAux2[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemHFAux2[i]->Init(0);
 		 //---------------------------------------------------------------------------
-		 MemHFAux3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1);
+		 MemHFAux3[i] = new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)Width,(uint)Height,1, false);
 		 MemHFAux3[i]->Init(0);
 		 //---------------------------------------------------------------------------
 
@@ -1450,16 +1450,16 @@ void TCVMotion::Compute_Warping(int NumScale)
 //--------------------------------------------------------------------------
 void TCVMotion::Compute_Census_Derivates(int NumScale, TGpuMem::TGpuMemHalfFloat  * _MemIm1,TGpuMem::TGpuMemHalfFloat  * _MemIm2, TGpuMem::TGpuMemHalfFloat *_MemIx, TGpuMem::TGpuMemHalfFloat *_MemIy, TGpuMem::TGpuMemHalfFloat *_MemIt)
 {
-	TGpuMem::TGpuMemUInt *_MemCensus1=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
-	TGpuMem::TGpuMemUInt *_MemCensus2=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
+	TGpuMem::TGpuMemUInt *_MemCensus1=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
+	TGpuMem::TGpuMemUInt *_MemCensus2=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
 
-	TGpuMem::TGpuMemUInt *_MemCensus1Aux=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
-	TGpuMem::TGpuMemUInt *_MemCensus2Aux=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
+	TGpuMem::TGpuMemUInt *_MemCensus1Aux=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
+	TGpuMem::TGpuMemUInt *_MemCensus2Aux=new TGpuMem::TGpuMemUInt(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
 
-	TGpuMem::TGpuMemHalfFloat *_UW=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
-	TGpuMem::TGpuMemHalfFloat *_VW=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
-	TGpuMem::TGpuMemHalfFloat *_MemAux1=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
-	TGpuMem::TGpuMemHalfFloat *_MemAux2=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1);
+	TGpuMem::TGpuMemHalfFloat *_UW=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
+	TGpuMem::TGpuMemHalfFloat *_VW=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
+	TGpuMem::TGpuMemHalfFloat *_MemAux1=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
+	TGpuMem::TGpuMemHalfFloat *_MemAux2=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)_MemIm1->Width(),(uint)_MemIm1->Height(),1, false);
 
 	_MemAux1->Init(0.0f);
 	_MemAux2->Init(0.0f);

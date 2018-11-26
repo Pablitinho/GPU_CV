@@ -19,8 +19,35 @@ TGpu::TGpu(int Block_X,int Block_Y)
 	BlockX = Block_X;
     BlockY = Block_Y;
 	CV = new TCV(this);
+
+	support_zero_copy = false;
+
 	InitTimer();
-};
+}
+//--------------------------------------------------------------------------
+bool TGpu::Allow_zero_copy() 
+{
+	bool success = false;
+
+	cudaDeviceProp prop;
+
+	CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, this->GetDevice()));
+
+	if (prop.canMapHostMemory == 1) 
+	{
+		CUDA_CHECK_RETURN(cudaSetDeviceFlags(cudaDeviceMapHost));
+		success = true;
+		support_zero_copy = true;
+	}
+	else 
+	{
+		printf("Function not supported \n");
+		success = false;
+		support_zero_copy = false;
+	}
+
+	return success;
+}
 //--------------------------------------------------------------------------
 int TGpu::CountGPUs()
 {

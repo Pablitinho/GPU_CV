@@ -521,7 +521,7 @@ void TCVFeatures::DiffusionWeight(TGpuMem::TGpuMemUChar  * MemSrc, TGpuMem::TGpu
 //--------------------------------------------------------------------------
 void TCVFeatures::DiffusionWeight(TGpuMem::TGpuMemHalfFloat  * MemSrc, TGpuMem::TGpuMemHalfFloat * MemDst, float alpha,float beta)
 {
-	TGpuMem::TGpuMemHalfFloat *MemGauss=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)MemSrc->Width(),(uint)MemSrc->Height(),1);
+	TGpuMem::TGpuMemHalfFloat *MemGauss=new TGpuMem::TGpuMemHalfFloat(Gpu,(uint)MemSrc->Width(),(uint)MemSrc->Height(),1,false);
 	((TGpu *)Gpu)->CV->Filters->SeparableConvolution(MemSrc,MemGauss,((TGpu *)Gpu)->CV->Filters->d_FilterGauss_1);
 
 	//----------------------------------------------------------------------------------------------------
@@ -611,10 +611,10 @@ void TCVFeatures::Derivates(TGpuMem::TGpuMemHalfFloat * MemSrc1,TGpuMem::TGpuMem
 void TCVFeatures::EigenVectors(TGpuMem::TGpuMemUChar  * MemSrc, TGpuMem::TGpuMemHalfFloat * MemNx,TGpuMem::TGpuMemHalfFloat * MemNy,TGpuMem::TGpuMemFloat * MemFilter)
 {
 	//----------------------------------------------------------------------------------------------------
-    TGpuMem::TGpuMemHalfFloat * MemIx= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIy= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIxAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
+    TGpuMem::TGpuMemHalfFloat * MemIx= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIy= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIxAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
 	//----------------------------------------------------------------------------------------------------
     Derivates(MemSrc,MemIx,MemIy);
     ((TGpu *)Gpu)->CV->Filters->SeparableConvolution(MemIx,MemIxAux,MemFilter);
@@ -641,11 +641,11 @@ void TCVFeatures::EigenVectors(TGpuMem::TGpuMemUChar  * MemSrc, TGpuMem::TGpuMem
 void TCVFeatures::EigenVectors(TGpuMem::TGpuMemHalfFloat  * MemSrc, TGpuMem::TGpuMemHalfFloat * MemNx,TGpuMem::TGpuMemHalfFloat * MemNy,TGpuMem::TGpuMemFloat * MemFilter)
 {
 	//----------------------------------------------------------------------------------------------------
-    TGpuMem::TGpuMemHalfFloat * MemIx2= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIy2= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIxIy= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIxAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
+    TGpuMem::TGpuMemHalfFloat * MemIx2= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIy2= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIxIy= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIxAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
 	//----------------------------------------------------------------------------------------------------
     ((TGpu *)Gpu)->CV->Filters->FirstOrderStructureTensor(MemSrc,MemIx2,MemIy2,MemIxIy,MemFilter);
 	//----------------------------------------------------------------------------------------------------

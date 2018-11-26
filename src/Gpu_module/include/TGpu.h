@@ -17,6 +17,7 @@ class SHARED_EXPORT TGpu {
 public:
 
     TGpu(int Block_X,int Block_Y);
+	bool Allow_zero_copy();
     int CountGPUs();
 	void PrintProperties(int Device_Num);
 	void GetLastError();
@@ -43,6 +44,7 @@ private:
     int BlockX;
     int BlockY;
 	cudaEvent_t start, stop;
+	bool support_zero_copy;
 };
 
 #endif /* TGPU_H_ */

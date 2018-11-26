@@ -469,7 +469,7 @@ TCVFilters::TCVFilters(void * d_Gpu)
     //----------------------------------------------------------
     float Vector_0_5[3]= { -0.106506978919201f, -0.786986042161598f, -0.106506978919201f };
     float *p_Vector=Vector_0_5;
-    d_FilterGauss_0_5= new TGpuMem::TGpuMemFloat(Gpu,3,1,1);
+    d_FilterGauss_0_5= new TGpuMem::TGpuMemFloat(Gpu,3,1,1, false);
     d_FilterGauss_0_5->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=1
@@ -477,49 +477,49 @@ TCVFilters::TCVFilters(void * d_Gpu)
     float Vector_1 [3] =  { -0.27407f,-0.45186f, -0.27407f };
     //float Vector_1[7] { -0.0175595134796699f, -0.129748230171210f, -0.352692256349121f, 0.0f, -0.352692256349121f, -0.129748230171210f, -0.0175595134796699f };
     p_Vector=Vector_1;
-    d_FilterGauss_1= new TGpuMem::TGpuMemFloat(Gpu,3,1,1);
+    d_FilterGauss_1= new TGpuMem::TGpuMemFloat(Gpu,3,1,1, false);
     d_FilterGauss_1->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=1.5
     //----------------------------------------------------------
     float Vector_1_5 [5] =  { -0.12008f,-0.23388f, -0.29208f, -0.23388f,-0.12008f};
     p_Vector=Vector_1_5;
-    d_FilterGauss_1_5= new TGpuMem::TGpuMemFloat(Gpu,5,1,1);
+    d_FilterGauss_1_5= new TGpuMem::TGpuMemFloat(Gpu,5,1,1, false);
     d_FilterGauss_1_5->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=2
     //----------------------------------------------------------
     float Vector_2 [5] = { -0.15247f, -0.22184f, -0.25138f, -0.22184f, -0.15247f };
     p_Vector=Vector_2;
-    d_FilterGauss_2= new TGpuMem::TGpuMemFloat(Gpu,5,1,1);
+    d_FilterGauss_2= new TGpuMem::TGpuMemFloat(Gpu,5,1,1, false);
     d_FilterGauss_2->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=2,5
     //----------------------------------------------------------
     float Vector_2_5 [7] = { -0.0923f, -0.1377f, -0.1751f, -0.1897f, -0.1751f, -0.1377f, -0.0923f };
     p_Vector=Vector_2_5;
-    d_FilterGauss_2_5= new TGpuMem::TGpuMemFloat(Gpu,7,1,1);
+    d_FilterGauss_2_5= new TGpuMem::TGpuMemFloat(Gpu,7,1,1, false);
     d_FilterGauss_2_5->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=3
     //----------------------------------------------------------
     float Vector_3 [9] = { -0.0630f, -0.0929f, -0.1226f, -0.1449f, -0.1532f, -0.1449f, -0.1226f, -0.0929f, -0.0630f };
     p_Vector=Vector_3;
-    d_FilterGauss_3= new TGpuMem::TGpuMemFloat(Gpu,9,1,1);
+    d_FilterGauss_3= new TGpuMem::TGpuMemFloat(Gpu,9,1,1, false);
     d_FilterGauss_3->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=3,5
     //----------------------------------------------------------
     float Vector_3_5 [11] =  { -0.046416f, -0.067019f, -0.089183f, -0.109374f, -0.123622f, -0.128772f, -0.123622f, -0.109374f, -0.089183f, -0.067019f, -0.046416f };
     p_Vector=Vector_3_5;
-    d_FilterGauss_3_5= new TGpuMem::TGpuMemFloat(Gpu,11,1,1);
+    d_FilterGauss_3_5= new TGpuMem::TGpuMemFloat(Gpu,11,1,1, false);
     d_FilterGauss_3_5->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Sigma=4
     //----------------------------------------------------------
     float Vector_4 [11] = { -0.054884f, -0.072709f, -0.090488f, -0.105791f, -0.116189f, -0.119877f, -0.116189f, -0.105791f, -0.090488f, -0.072709f, -0.054884f };
     p_Vector=Vector_4;
-    d_FilterGauss_4= new TGpuMem::TGpuMemFloat(Gpu,11,1,1);
+    d_FilterGauss_4= new TGpuMem::TGpuMemFloat(Gpu,11,1,1, false);
     d_FilterGauss_4->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Derivate size 5
@@ -527,14 +527,14 @@ TCVFilters::TCVFilters(void * d_Gpu)
     //Ori
     float Derivate_5 [5] =  { 0.083333333333333f, -0.666666666666667f, 0.0f, 0.666666666666667f, -0.083333333333333f };
     p_Vector=Derivate_5;
-    d_FilterDerivate_5= new TGpuMem::TGpuMemFloat(Gpu,5,1,1);
+    d_FilterDerivate_5= new TGpuMem::TGpuMemFloat(Gpu,5,1,1, false);
     d_FilterDerivate_5->CopyToDevice(p_Vector);
     //----------------------------------------------------------
     // Derivate size 5
     //----------------------------------------------------------
     float Vector_5 [7] = {-0.0175595134796699f, -0.129748230171210f, -0.352692256349121f, 0.0f, -0.352692256349121f, -0.129748230171210f, -0.0175595134796699f};
     p_Vector=Vector_5;
-    d_FilterGauss_x= new TGpuMem::TGpuMemFloat(Gpu,7,1,1);
+    d_FilterGauss_x= new TGpuMem::TGpuMemFloat(Gpu,7,1,1, false);
     d_FilterGauss_x->CopyToDevice(p_Vector);
 
 
@@ -603,7 +603,7 @@ void TCVFilters::SeparableConvolution_V(TGpuMem::TGpuMemUChar * MemSrc, TGpuMem:
 //--------------------------------------------------------------------------
 void TCVFilters::SeparableConvolution(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMem::TGpuMemHalfFloat * MemDst,TGpuMem::TGpuMemFloat * MemFilter)
 {
-    TGpuMem::TGpuMemHalfFloat * MemAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
+    TGpuMem::TGpuMemHalfFloat * MemAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
 
 	SeparableConvolution_H(MemSrc,MemAux,MemFilter);
 	SeparableConvolution_V(MemAux,MemDst,MemFilter);
@@ -613,10 +613,10 @@ void TCVFilters::SeparableConvolution(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMe
 //--------------------------------------------------------------------------
 void TCVFilters::FirstOrderStructureTensor(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMem::TGpuMemHalfFloat * MemIx2,TGpuMem::TGpuMemHalfFloat * MemIy2, TGpuMem::TGpuMemHalfFloat * MemIxIy,TGpuMem::TGpuMemFloat * MemFilter)
 {
-    TGpuMem::TGpuMemHalfFloat * MemAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIx2Aux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIy2Aux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
-    TGpuMem::TGpuMemHalfFloat * MemIxIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1);
+    TGpuMem::TGpuMemHalfFloat * MemAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIx2Aux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIy2Aux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
+    TGpuMem::TGpuMemHalfFloat * MemIxIyAux= new TGpuMem::TGpuMemHalfFloat(Gpu,MemSrc->Width(), MemSrc->Height(),1, false);
 
     SeparableConvolution(MemSrc,MemAux,MemFilter);
 	//----------------------------------------------------------------------------------------------------

@@ -347,7 +347,7 @@ template <typename T> __global__ void Init_Kernel_T(T * img_dst, T Value, int Wi
 //==========================================================================
 // Int
 //==========================================================================
-TGpuMem::TGpuMemInt::TGpuMemInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uint)
+TGpuMem::TGpuMemInt::TGpuMemInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0, bool use_zero_copy_=false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_int, use_zero_copy_)
 {
 
 }
@@ -423,7 +423,7 @@ TGpuMem::TGpuMemInt::~TGpuMemInt()
 //==========================================================================
 // UInt
 //==========================================================================
-TGpuMem::TGpuMemUInt::TGpuMemUInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uint)
+TGpuMem::TGpuMemUInt::TGpuMemUInt(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0, bool use_zero_copy_ = false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uint, use_zero_copy_)
 {
 
 }
@@ -502,7 +502,7 @@ TGpuMem::TGpuMemUInt::~TGpuMemUInt()
 //==========================================================================
 // Float
 //==========================================================================
-TGpuMem::TGpuMemFloat::TGpuMemFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_float)
+TGpuMem::TGpuMemFloat::TGpuMemFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0, bool use_zero_copy_ = false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_float, use_zero_copy_)
 {
 
 }
@@ -578,7 +578,7 @@ TGpuMem::TGpuMemFloat::~TGpuMemFloat()
 //==========================================================================
 // Half float
 //==========================================================================
-TGpuMem::TGpuMemHalfFloat::TGpuMemHalfFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_half_float)
+TGpuMem::TGpuMemHalfFloat::TGpuMemHalfFloat(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0, bool use_zero_copy_ = false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_half_float, use_zero_copy_)
 {
 
 }
@@ -595,7 +595,7 @@ void TGpuMem::TGpuMemHalfFloat::CopyToDevice(unsigned short *h_Mem)
 //-----------------------------------------------------------------------------------------
 float * TGpuMem::TGpuMemHalfFloat::CopyFromDevice()
 {
-   TGpuMem::TGpuMemFloat *MemFloat=new TGpuMem::TGpuMemFloat(Gpu,this->Width(),this->Height(),this->Channels());
+   TGpuMem::TGpuMemFloat *MemFloat=new TGpuMem::TGpuMemFloat(Gpu,this->Width(),this->Height(),this->Channels(),use_zero_copy);
    this->Casting(MemFloat);
    //cout<<"xx..."<<endl;
    float * Vector= MemFloat->CopyFromDevice();
@@ -640,7 +640,7 @@ void TGpuMem::TGpuMemHalfFloat::WriteFileFromDevice(const char * File)
 	TMathUtils * myUtils = new TMathUtils();
 	ofstream outfile;
     outfile.open(File);
-    TGpuMem::TGpuMemFloat * MemFloat= new TGpuMem::TGpuMemFloat(Gpu,Width(), Height(),1);
+    TGpuMem::TGpuMemFloat * MemFloat= new TGpuMem::TGpuMemFloat(Gpu,Width(), Height(),1,use_zero_copy);
 
     Casting(MemFloat);
     float * h_Mem = MemFloat->CopyFromDevice();
@@ -670,7 +670,7 @@ TGpuMem::TGpuMemHalfFloat::~TGpuMemHalfFloat()
 //==========================================================================
 // Unsigned Char
 //==========================================================================
-TGpuMem::TGpuMemUChar::TGpuMemUChar(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uchar)
+TGpuMem::TGpuMemUChar::TGpuMemUChar(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0,bool use_zero_copy_=false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uchar, use_zero_copy_)
 {
 
 }
@@ -748,7 +748,7 @@ TGpuMem::TGpuMemUChar::~TGpuMemUChar()
 //==========================================================================
 // Double
 //==========================================================================
-TGpuMem::TGpuMemDouble::TGpuMemDouble(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_uchar)
+TGpuMem::TGpuMemDouble::TGpuMemDouble(void *Gpu_,uint Width =0,uint Height=0,uint Channels=0, bool use_zero_copy_ = false):TGpuCoreMem(Gpu_, Width, Height, Channels, TGpuMem::t_double, use_zero_copy_)
 {
 
 }
@@ -829,13 +829,14 @@ TGpuMem::TGpuMemDouble::~TGpuMemDouble()
 //==========================================================================
 
 //--------------------------------------------------------------------------
-TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channels,int MemType_)
+TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channels,int MemType_,bool use_zero_copy_ = false)
 {
 	d_Size = Width*Height*Channels;
 	d_Width = Width;
 	d_Height = Height;
 	d_Channels = Channels;
     Gpu=Gpu_;
+	use_zero_copy = use_zero_copy_;
 
 	switch(MemType_)
     {

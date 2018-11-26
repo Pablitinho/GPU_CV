@@ -24,7 +24,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuCoreMem(void *Gpu_,uint Width ,uint Height,uint Channels,int MemType_);
+		TGpuCoreMem(void *Gpu_,uint Width ,uint Height,uint Channels,int MemType_,bool use_zero_copy_);
 
 		void CopyToDevice(void *h_Mem);
 		void * CopyFromDevice();
@@ -48,6 +48,7 @@ public:
 	    uint d_Channels;
 	    int d_MemType;
 	    void * Gpu;
+		bool use_zero_copy;
 
 	//-----------------------------------
 	};
@@ -55,7 +56,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemUChar(void * Gpu_,uint Width,uint Height,uint Channels);
+		TGpuMemUChar(void * Gpu_,uint Width,uint Height,uint Channels,bool use_zero_copy_);
 		void CopyToDevice(unsigned char *h_Mem);
 		void SetMem(unsigned char * Mem_);
 		unsigned char * CopyFromDevice();
@@ -71,7 +72,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemInt(void *Gpu_,uint Width,uint Height,uint Channel);
+		TGpuMemInt(void *Gpu_,uint Width,uint Height,uint Channel, bool use_zero_copy_);
 		void CopyToDevice(int *h_Mem);
 		int * CopyFromDevice();
 		void SetMem(int * Mem_);
@@ -87,7 +88,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemUInt(void *Gpu_,uint Width,uint Height,uint Channels);
+		TGpuMemUInt(void *Gpu_,uint Width,uint Height,uint Channels, bool use_zero_copy_);
 		void CopyToDevice(unsigned int *h_Mem);
 		unsigned int * CopyFromDevice();
 		void SetMem(uint * Mem_);
@@ -103,7 +104,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemFloat(void *Gpu_,uint Width,uint Height,uint Channels);
+		TGpuMemFloat(void *Gpu_,uint Width,uint Height,uint Channels, bool use_zero_copy_);
 		void CopyToDevice(float *h_Mem);
 		float * CopyFromDevice();
 		void SetMem(float * Mem_);
@@ -119,7 +120,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemHalfFloat(void *Gpu_,uint Width,uint Height,uint Channels);
+		TGpuMemHalfFloat(void *Gpu_,uint Width,uint Height,uint Channels, bool use_zero_copy_);
 		void CopyToDevice(unsigned short *h_Mem);
 		float *CopyFromDevice();
 		void SetMem(unsigned short * Mem_);
@@ -135,7 +136,7 @@ public:
 	//-----------------------------------
 	public:
 
-		TGpuMemDouble(void *Gpu_,uint Width,uint Height,uint Channels);
+		TGpuMemDouble(void *Gpu_,uint Width,uint Height,uint Channels, bool use_zero_copy_);
 		void CopyToDevice(double *h_Mem);
 		double * CopyFromDevice();
 		void SetMem(double * Mem_);

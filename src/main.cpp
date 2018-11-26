@@ -32,12 +32,12 @@ int main(void)
 	
 	myGpu->PrintProperties(0);
 
-    Mat im_rgb_host = imread("C:\\Work\\GPU_CV\\data\\denso.png", CV_LOAD_IMAGE_COLOR);
+    Mat im_rgb_host = imread("..\\data\\denso.png", CV_LOAD_IMAGE_COLOR);
 
     Mat im_gray_host(im_rgb_host.rows , im_rgb_host.cols, CV_8UC(1));
     //-----------------------------------------------------------------------------------------------------------------
-    TGpuMem::TGpuMemUChar * im_rgb_device= new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows,3);
-	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 1);
+    TGpuMem::TGpuMemUChar * im_rgb_device= new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows,3,false);
+	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 1,false);
     //-----------------------------------------------------------------------------------------------------------------
 
     float elapsed=0;

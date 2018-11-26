@@ -228,7 +228,7 @@ TCVUtils::TCVUtils(void * d_Gpu)
 	// OF and Stereo Color
 	//-----------------------------------------------
     ncols=0;
-	MemColorWheel = new TGpuMem::TGpuMemInt(Gpu,60,1,3);
+	MemColorWheel = new TGpuMem::TGpuMemInt(Gpu,60,1,3, false);
 	int * ptr_Color=Makecolorwheel();
 	MemColorWheel->CopyToDevice(ptr_Color);
 	delete ptr_Color;
@@ -313,7 +313,7 @@ void TCVUtils::OpticalFlowToColor(TGpuMem::TGpuMemHalfFloat * MemU,TGpuMem::TGpu
        dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(MemU->Width(), numThreads.x), ((TGpu *)Gpu)->iDivUp(MemU->Height(), numThreads.y));
 	   //----------------------------------------------------------------------------------------------------
 
-	   TGpuMem::TGpuMemHalfFloat *MemAux = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1);
+	   TGpuMem::TGpuMemHalfFloat *MemAux = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1, false);
 	   ((TGpu *)Gpu)->CV->Math->Eucliden_Norm(MemU,MemV,MemAux);
 
        float Max,Min,Avg;
@@ -348,8 +348,8 @@ void TCVUtils::StereoToColor(TGpuMem::TGpuMemHalfFloat * MemU, TGpuMem::TGpuMemU
        dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(MemU->Width(), numThreads.x), ((TGpu *)Gpu)->iDivUp(MemU->Height(), numThreads.y));
 	   //----------------------------------------------------------------------------------------------------
 
-	   TGpuMem::TGpuMemHalfFloat *MemAux1 = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1);
-	   TGpuMem::TGpuMemHalfFloat *MemAux2 = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1);
+	   TGpuMem::TGpuMemHalfFloat *MemAux1 = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1, false);
+	   TGpuMem::TGpuMemHalfFloat *MemAux2 = new TGpuMem::TGpuMemHalfFloat(Gpu,MemU->Width(),MemU->Height(),1, false);
 
 	   ((TGpu *)Gpu)->CV->Math->Abs(MemU,MemAux1);
        float Max,Min,Avg;
