@@ -14,14 +14,12 @@
 
 using namespace std;
 //--------------------------------------------------------------------------
-TGpu::TGpu(int device_id, int Block_X,int Block_Y)
+TGpu::TGpu(int Block_X,int Block_Y)
 {
 	BlockX = Block_X;
     BlockY = Block_Y;
 	Allow_zero_copy();
 	
-	this->SetDevice(device_id);
-
 	CV = new TCV(this);
 
 	InitTimer();

@@ -16,11 +16,12 @@ enum CacheConfig { DefaultCache=0, PreferShared=1, PreferL1=2, Equal=3};
 class SHARED_EXPORT TGpu {
 public:
 
-    TGpu(int device_id, int Block_X,int Block_Y);
+    TGpu(int Block_X,int Block_Y);
 	
     int CountGPUs();
 	void PrintProperties(int Device_Num);
 	void GetLastError();
+	void SetDevice(int DevNum);
 	int GetDevice();
 	void ResetDevice();
 	int  iDivUp(int a, int b);
@@ -38,7 +39,7 @@ public:
     TCV * CV;
 
 private:
-	void SetDevice(int DevNum);
+	
 	bool Allow_zero_copy();
 	void InitTimer();
 	void DestroyTimer();
