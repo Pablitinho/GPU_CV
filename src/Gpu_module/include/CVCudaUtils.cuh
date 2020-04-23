@@ -1,9 +1,10 @@
 #ifndef CVCUDAUTILS_CUH_
 #define CVCUDAUTILS_CUH_
 
-/*#include <cuda.h>
-#include <cuda_runtime_api.h>*/
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 #include <stdio.h>
+#include "cuda_fp16.h"
 //--------------------------------------------------------------------------
 #define NUMPI 3.14159265358979323846
 #define NUMPI_2 1.57079632679489661923

@@ -4,7 +4,9 @@
 #include "TMathUtils.h"
 #include "types_cc.h"
 #include <typeinfo>
-
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
+#include "defines.h"
 //==========================================================================
 // Kernels
 //==========================================================================
@@ -334,6 +336,7 @@ template <typename T> __global__ void Init_Kernel_T(T * img_dst, T Value, int Wi
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
 	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
 	int OffsetIm = (globalY * Width + globalX);
+	
 	//------------------------------------------------------------------
 	if (globalX < (Width) && globalY < (Height))
 	{
@@ -722,6 +725,7 @@ unsigned char * TGpuMem::TGpuMemUChar::GetMemory()
 //-----------------------------------------------------------------------------------------
 void TGpuMem::TGpuMemUChar::Init(unsigned char value)
 {
+	int dev = ((TGpu *)Gpu)->GetDevice();
 	//----------------------------------------------------------------------------------------------------
 	// Estimate the number of Blocks and number Threads
 	//----------------------------------------------------------------------------------------------------
@@ -729,7 +733,7 @@ void TGpuMem::TGpuMemUChar::Init(unsigned char value)
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
 	Init_Kernel_T<unsigned char> << <numBlocks, numThreads >> > ((unsigned char *)d_Mem, value, d_Width, d_Height);
-    cudaThreadSynchronize();
+	CUDA_CHECK_RETURN(cudaThreadSynchronize());
 }
 //-----------------------------------------------------------------------------------------
 void TGpuMem::TGpuMemUChar::Copy(TGpuMemUChar * MemDst)
@@ -837,37 +841,37 @@ TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channel
 	d_Channels = Channels;
     Gpu=Gpu_;
 	use_zero_copy = use_zero_copy_;
-
+	//((TGpu *)Gpu)->SetDevice(((TGpu *)Gpu)->GetDevice());
 	switch(MemType_)
     {
 		    case t_int: //int
 		    		{
-		    	      cudaMalloc((void**) &d_Mem, sizeof(int) * d_Size);
+					  CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(int) * d_Size));
 		    	      break;
 		            }
 		    case t_float: //float
 		    		{
-		    	      cudaMalloc((void**) &d_Mem, sizeof(float) * d_Size);
+					  CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(float) * d_Size));
 		    	      break;
 		            }
 		    case t_uchar: //unsigned char
 		    		{
-			    	  cudaMalloc((void**) &d_Mem, sizeof(unsigned char) * d_Size);
+					  CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(unsigned char) * d_Size));
 			    	  break;
 		            }
 		    case t_half_float: //half_float
 		    		{
-			    	  cudaMalloc((void**) &d_Mem, sizeof(unsigned short) * d_Size);
+				      CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(unsigned short) * d_Size));
 			    	  break;
 		            }
 		    case t_double: //double
 		            {
-			    	  cudaMalloc((void**) &d_Mem, sizeof(double) * d_Size);
+				      CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(double) * d_Size));
 			    	  break;
 		            }
 		    case t_uint: //unsigned int
 		    		{
-			    	  cudaMalloc((void**) &d_Mem, sizeof(unsigned int) * d_Size);
+				      CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(unsigned int) * d_Size));
 			    	  break;
 		            }
 		}
@@ -877,38 +881,39 @@ TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channel
 //--------------------------------------------------------------------------
 void TGpuMem::TGpuCoreMem::CopyToDevice(void *h_Mem)
 {
+	//((TGpu *)Gpu)->SetDevice(((TGpu *)Gpu)->GetDevice());
 	switch(d_MemType)
 	{
 
 		    case t_int: //int
 		    		{
-		    	      cudaMemcpy(d_Mem, h_Mem, sizeof(int) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(int) * d_Size, cudaMemcpyHostToDevice));
 		    	      break;
 		            }
 		    case t_float: //float
 		    		{
-		    	      cudaMemcpy(d_Mem, h_Mem, sizeof(float) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(float) * d_Size, cudaMemcpyHostToDevice));
 		    	      break;
 		            }
 		    case t_uchar: //unsigned char
 		    		{
 
-			    	  cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned char) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned char) * d_Size, cudaMemcpyHostToDevice));
 			    	  break;
 		            }
 		    case t_half_float: //half_float
 		    		{
-			    	  cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyHostToDevice));
 			    	  break;
 		            }
 		    case t_double: //double
 		            {
-			    	  cudaMemcpy(d_Mem, h_Mem, sizeof(double) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(double) * d_Size, cudaMemcpyHostToDevice));
 			    	  break;
 		            }
 		    case t_uint: //unsigned int
 		    		{
-			    	  cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned int) * d_Size, cudaMemcpyHostToDevice);
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned int) * d_Size, cudaMemcpyHostToDevice));
 			    	  break;
 		            }
 		}
@@ -916,49 +921,49 @@ void TGpuMem::TGpuCoreMem::CopyToDevice(void *h_Mem)
 //--------------------------------------------------------------------------
 void * TGpuMem::TGpuCoreMem::CopyFromDevice( )
 {
-
+	//((TGpu *)Gpu)->SetDevice(((TGpu *)Gpu)->GetDevice());
 	switch(d_MemType)
 	{
 		    case t_int: //int
 		    		{
 		    		  void * h_Mem= new int[d_Size];
-		    		  cudaMemcpy(h_Mem, d_Mem, sizeof(int) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(int) * d_Size, cudaMemcpyDeviceToHost));
 		    		  return h_Mem;
 
 		            }
 		    case t_float: //float
 		    		{
 			          void * h_Mem= new float[d_Size];
-			          cudaMemcpy(h_Mem, d_Mem, sizeof(float) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(float) * d_Size, cudaMemcpyDeviceToHost));
 			          return h_Mem;
 
 		            }
 		    case t_uchar: //unsigned char
 		    		{
-		    			cout << "-"<<endl;
+		    			
 				      void * h_Mem= new unsigned char[d_Size];
-				      cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned char) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned char) * d_Size, cudaMemcpyDeviceToHost));
 				      return h_Mem;
 
 		            }
 		    case t_half_float: //half_float
 		    		{
 					  void * h_Mem= new unsigned short[d_Size];
-					  cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyDeviceToHost));
 					  return h_Mem;
 
 		            }
 		    case t_double: //double
 		            {
 			          void * h_Mem= new double[d_Size];
-					  cudaMemcpy(h_Mem, d_Mem, sizeof(double) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(double) * d_Size, cudaMemcpyDeviceToHost));
 					  return h_Mem;
 
 		            }
 		    case t_uint: //unsigned int
 		    		{
 				      void * h_Mem= new unsigned int[d_Size];
-				      cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned int) * d_Size, cudaMemcpyDeviceToHost);
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned int) * d_Size, cudaMemcpyDeviceToHost));
 				      return h_Mem;
 
 		            }
@@ -997,9 +1002,10 @@ void TGpuMem::TGpuCoreMem::Casting(TGpuCoreMem * dst_Mem)
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp(d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
 	enum { t_int = 0, t_float = 1, t_uchar = 2, t_half_float = 3, t_double = 4, t_uint = 5};
+
+	//((TGpu *)Gpu)->SetDevice(((TGpu *)Gpu)->GetDevice());
     switch(d_MemType)
     {
-		
     	case 0: {//int
     		      CastingInt_Kernel<<<numBlocks, numThreads>>>(d_Mem, dst_Mem->d_Mem, (int)d_MemType, (int)dst_Mem->d_MemType,d_Width, d_Height);
     		      break;
@@ -1033,6 +1039,6 @@ void TGpuMem::TGpuCoreMem::Casting(TGpuCoreMem * dst_Mem)
 //--------------------------------------------------------------------------
 TGpuMem::TGpuCoreMem::~TGpuCoreMem()
 {
-	(cudaFree((void*) d_Mem));
+	CUDA_CHECK_RETURN(cudaFree((void*) d_Mem));
 }
 //--------------------------------------------------------------------------

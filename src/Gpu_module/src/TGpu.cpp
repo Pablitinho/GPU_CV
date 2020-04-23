@@ -14,14 +14,17 @@
 
 using namespace std;
 //--------------------------------------------------------------------------
-TGpu::TGpu(int Block_X,int Block_Y)
+TGpu::TGpu(int Block_X,int Block_Y, int Device_Num)
 {
+	//SetDevice(Device_Num);
+	
 	BlockX = Block_X;
     BlockY = Block_Y;
 	
 	Allow_zero_copy();
 	CV = new TCV(this);
 	
+
 	InitTimer();
 }
 //--------------------------------------------------------------------------
@@ -31,23 +34,23 @@ bool TGpu::Allow_zero_copy()
 
 	cudaDeviceProp prop;
 
-	int dev_id = this->GetDevice();
+	//int dev_id = this->GetDevice();
 
-	CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, dev_id));
+	//CUDA_CHECK_RETURN(cudaGetDeviceProperties(&prop, dev_id));
 
-	if (prop.canMapHostMemory == 1) 
-	{
-		CUDA_CHECK_RETURN(cudaSetDeviceFlags(cudaDeviceMapHost));
-		success = true;
-		support_zero_copy = true;
-	}
-	else 
-	{
-		printf("Zero Copy not supported \n");
-		success = false;
+	//if (prop.canMapHostMemory == 1) 
+	//{
+	//	CUDA_CHECK_RETURN(cudaSetDeviceFlags(cudaDeviceMapHost));
+	//	success = true;
+	//	support_zero_copy = true;
+	//}
+	//else 
+	//{
+	//	printf("Zero Copy not supported \n");
+	//	success = false;
 		support_zero_copy = false;
-	}
-
+	//}
+ 
 	return success;
 }
 //--------------------------------------------------------------------------
@@ -98,6 +101,7 @@ void TGpu::GetLastError()
 void TGpu::SetDevice(int DevNum)
 {
 	CUDA_CHECK_RETURN(cudaSetDevice(DevNum));
+	//InitTimer();
 }
 //--------------------------------------------------------------------------
 int TGpu::GetDevice()
@@ -141,6 +145,8 @@ void TGpu::StartMeasurement()
 //--------------------------------------------------------------------------
 float TGpu::StopMeasurement()
 {
+	int dev = GetDevice();
+	SetDevice(GetDevice());
 	float elapsed;
 	CUDA_CHECK_RETURN(cudaEventRecord(stop, 0));
 	CUDA_CHECK_RETURN(cudaEventSynchronize(stop));

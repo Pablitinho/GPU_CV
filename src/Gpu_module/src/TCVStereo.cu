@@ -7,6 +7,8 @@
 
 #include "TCVStereo.h"
 #include "CVCudaUtils.cuh"
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 //==========================================================================
 __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * MemG,unsigned short * MemU,unsigned short * MemP1x,unsigned short *MemP2x,unsigned short * MemAPP1x,unsigned short *MemAPP2x,float Tau,float epsi,bool FirsTime,unsigned short *MNx,unsigned short *MNy,int Width,int Height)
 {

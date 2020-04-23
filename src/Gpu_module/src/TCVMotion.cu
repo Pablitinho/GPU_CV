@@ -9,6 +9,8 @@
 #include <math.h>
 #include <stdio.h>
 #include "CVCudaUtils.cuh"
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 using namespace std;
 
 //==========================================================================

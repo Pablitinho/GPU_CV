@@ -7,6 +7,8 @@
 
 #include "TCVUtils.h"
 #include "defines.h"
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 //==========================================================================
 // Kernels
 //==========================================================================

@@ -13,6 +13,8 @@
 #include <typeinfo>
 #include "CVCudaUtils.cuh"
 #include <math.h>
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 using namespace std;
 //==========================================================================
 // Kernels

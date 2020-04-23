@@ -16,7 +16,7 @@ enum CacheConfig { DefaultCache=0, PreferShared=1, PreferL1=2, Equal=3};
 class SHARED_EXPORT TGpu {
 public:
 
-    TGpu(int Block_X,int Block_Y);
+    TGpu(int Block_X,int Block_Y,int Device_Num);
     int CountGPUs();
 	void PrintProperties(int Device_Num);
 	void GetLastError();

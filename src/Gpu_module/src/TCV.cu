@@ -7,6 +7,8 @@
 
 #include "TCV.h"
 #include "CVCudaUtils.cuh"
+#include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 //--------------------------------------------------------------------------
 TCV::TCV(void * d_Gpu)
 {

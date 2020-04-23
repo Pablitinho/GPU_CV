@@ -40,7 +40,10 @@ public:
 	    ~TGpuCoreMem();
 	//-----------------------------------
 	protected:
-		void * GetMem(){return d_Mem;};
+		void * GetMem()
+		{
+			return d_Mem;
+		};
 	    void *  d_Mem;
 	    uint d_Size;
 	    uint d_Width;
