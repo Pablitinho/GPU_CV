@@ -21,71 +21,152 @@ using namespace cv;
 //--------------------------------------------------------------------------
 // MAIN
 //--------------------------------------------------------------------------
-int main(void)
+void imageResize(TGpu *myGpu)
 {
-	TGpu *myGpu = new TGpu(16,8,0);
-	
-	//myGpu->SetCacheConfig(CacheConfig::PreferL1);
+	float factor = 2.5;
 
-    //cout << "Num of Gpus: "<<myGpu->CountGPUs() <<endl;
-	//cout << "Device ID: " << myGpu->GetDevice() << endl;
-	
-	//myGpu->PrintProperties(0);
-
-    //Mat im_rgb_host = imread("..\\data\\denso.png", CV_LOAD_IMAGE_COLOR);
 	Mat im_rgb_host = imread("..\\data\\denso.png", IMREAD_UNCHANGED);
-	
-	Mat im_gray_host(im_rgb_host.rows, im_rgb_host.cols, CV_8UC(1));
-	Mat im_rgb_host_2(im_rgb_host.rows, im_rgb_host.cols, CV_8UC(3));
-	//------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------------------------
-    TGpuMem::TGpuMemUChar * im_rgb_device  = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows,3,false);
-	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 1,false);
-    //-----------------------------------------------------------------------------------------------------------------
-	cudaError_t err = cudaGetLastError();
-	if (err != cudaSuccess)
-		printf("Error: %s\n", cudaGetErrorString(err));
-    float elapsed=0;
 
-	//myGpu->StartMeasurement();
+	Mat im_gray_host(im_rgb_host.rows, im_rgb_host.cols, CV_8UC(1));
+	Mat im_gray_host_resized(im_rgb_host.rows*factor, im_rgb_host.cols*factor, CV_8UC(1));
+	//------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------------------
+	TGpuMem::TGpuMemUChar * im_rgb_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 3, false);
+	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols, im_rgb_host.rows, 1, false);
+	TGpuMem::TGpuMemUChar * im_gray_device_resized = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host.cols*factor, im_rgb_host.rows*factor, 1, false);
+	//-----------------------------------------------------------------------------------------------------------------
+	float elapsed = 0;
+
+	myGpu->StartMeasurement();
 
 	// Copy data from Host to Device
 	im_rgb_device->CopyToDevice(im_rgb_host.data);
-	im_rgb_host_2.data = im_rgb_device->CopyFromDevice();
-
-	im_gray_device->Init(255);
 
 	// Convert from RGB to GRAY
-    myGpu->CV->ColorSpace->RgbToGray(im_rgb_device, im_gray_device);
+	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device, im_gray_device);
+	// Resize image
+	//myGpu->CV->Geometry->ResizeBilinear(im_gray_device, im_gray_device_resized);
+	myGpu->CV->Geometry->Resize(im_gray_device, im_gray_device_resized);
 
 	// Copy data from Device to Host
 	im_gray_host.data = im_gray_device->CopyFromDevice();
+	im_gray_host_resized.data = im_gray_device_resized->CopyFromDevice();
 
-	//elapsed = myGpu->StopMeasurement();
+	elapsed = myGpu->StopMeasurement();
 
-	cout << "Time (ms): " << elapsed  <<endl;
+	cout << "Time (ms): " << elapsed << endl;
 
-    //-----------------------------------------------------------------
+	//-----------------------------------------------------------------
 	// Display image
 	//-----------------------------------------------------------------
-	//namedWindow("Image RGB", WINDOW_AUTOSIZE);// Create a window for display.
-	//imshow("Image RGB", im_rgb_host_2);                   // Show our image inside it.
-	//moveWindow("Image RGB", 200, 200);
-
-	//waitKey(0);
-
-    namedWindow( "Image Gray", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Image Gray", im_gray_host);                   // Show our image inside it.
-    moveWindow("Image Gray", 200, 200);
+	namedWindow("Image Gray", WINDOW_AUTOSIZE);// Create a window for display.
+	imshow("Image Gray", im_gray_host_resized);                   // Show our image inside it.
+	moveWindow("Image Gray", 200, 200);
 
 	waitKey(0);
-    //-----------------------------------------------------------
-    // Dispose
-    //-----------------------------------------------------------
+	//-----------------------------------------------------------
+	// Dispose
+	//-----------------------------------------------------------
 	im_rgb_host.release();
 	im_gray_host.release();
-    delete im_rgb_device;
+	delete im_rgb_device;
 	delete im_gray_device;
+}
+//-------------------------------------------------------------------------------------------------------------------
+void opticalFlow(TGpu *myGpu)
+{
+	Mat im_rgb_host_0 = imread("..\\data\\Army\\frame10.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_1 = imread("..\\data\\Army\\frame11.png", IMREAD_UNCHANGED);
+	Mat opticalFlowMat(im_rgb_host_0.rows, im_rgb_host_0.cols, CV_8UC(3));
+
+	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+
+	TGpuMem::TGpuMemUChar * im_rgb_device_0 = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 3, false);
+	TGpuMem::TGpuMemUChar * im_rgb_device_1 = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 3, false);
+	TGpuMem::TGpuMemUChar * opticalFlow = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 3, false);
+
+
+	TGpuMem::TGpuMemHalfFloat * U = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 1, false);
+	TGpuMem::TGpuMemHalfFloat * V = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+
+	TGpuMem::TGpuMemHalfFloat * im_gray_hf_device_0 = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 1, false);
+	TGpuMem::TGpuMemHalfFloat * im_gray_hf_device_1 = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+
+	// Copy to gpu
+	im_rgb_device_0->CopyToDevice(im_rgb_host_0.data);
+	im_rgb_device_1->CopyToDevice(im_rgb_host_1.data);
+
+	// RGB-> Gray
+	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device_0, im_gray_hf_device_0);
+	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device_1, im_gray_hf_device_1);
+
+	// Create pyramid
+	myGpu->CV->Motion->InitPyramid(6, 20, 0.5, im_rgb_host_0.cols, im_rgb_host_0.rows);
+	// Comput Optical flow
+	myGpu->CV->Motion->AniTVL1(im_gray_hf_device_0, im_gray_hf_device_1, U, V, 150, 2, 0.6, 0.3, false);
+	// Convert optical flow to color
+	myGpu->CV->Utils->OpticalFlowToColor(U, V, opticalFlow, 0.5);
+	// Copy from device
+	opticalFlowMat.data = opticalFlow->CopyFromDevice();
+	// Show optical flow
+	namedWindow("Optical Flow", WINDOW_AUTOSIZE);// Create a window for display.
+	imshow("Optical Flow", opticalFlowMat);                   // Show our image inside it.
+	moveWindow("Optical Flow", 200, 200);
+	waitKey(0);
+}
+
+void stereo(TGpu *myGpu)
+{
+	Mat im_rgb_host_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
+	Mat disparity_host(im_rgb_host_0.rows, im_rgb_host_0.cols, CV_8UC(1));
+
+	TGpuMem::TGpuMemUChar * im_rgb_device_0 = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 3, false);
+	TGpuMem::TGpuMemUChar * im_rgb_device_1 = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 3, false);
+
+	TGpuMem::TGpuMemHalfFloat * disparity_device_hf = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+	TGpuMem::TGpuMemUChar * disparity_device_char = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+
+	TGpuMem::TGpuMemHalfFloat * im_gray_hf_device_0 = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 1, false);
+	TGpuMem::TGpuMemHalfFloat * im_gray_hf_device_1 = new TGpuMem::TGpuMemHalfFloat(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
+
+	// Copy to gpu
+	im_rgb_device_0->CopyToDevice(im_rgb_host_0.data);
+	im_rgb_device_1->CopyToDevice(im_rgb_host_1.data);
+
+	// RGB-> Gray
+	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device_0, im_gray_hf_device_0);
+	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device_1, im_gray_hf_device_1);
+	
+	// Create pyramid
+	myGpu->CV->Stereo->InitPyramid(16, 20, 0.5, im_rgb_host_0.cols, im_rgb_host_0.rows);
+	// Comput Disparity
+	myGpu->CV->Stereo->AniTVL1_Stereo(im_gray_hf_device_0, im_gray_hf_device_1, disparity_device_hf, 250,8, 0.7, 0.7, true);
+
+	// Convert Disparity to color
+	myGpu->CV->Utils->StereoToColor(disparity_device_hf, disparity_device_char);
+
+	// Copy from device
+	disparity_host.data = disparity_device_char->CopyFromDevice();
+	// Show optical flow
+	namedWindow("Stereo", WINDOW_AUTOSIZE);// Create a window for display.
+	imshow("Stereo", disparity_host);                   // Show our image inside it.
+	moveWindow("Stereo", 200, 200);
+	waitKey(0);
+}
+int main(void)
+{
+	TGpu *myGpu = new TGpu(16,8,0);
+
+	myGpu->SetCacheConfig(CacheConfig::PreferL1);
+
+    cout << "Num of Gpus: "<<myGpu->CountGPUs() <<endl;
+	cout << "Device ID: " << myGpu->GetDevice() << endl;
+	myGpu->PrintProperties(0);
+
+	//imageResize(myGpu);
+	//opticalFlow(myGpu);
+	stereo(myGpu);
 	delete myGpu;
 
 	return 0;

@@ -4,7 +4,7 @@
 #include "TMathUtils.h"
 #include "types_cc.h"
 #include <typeinfo>
-#include "cuda_fp16.h"
+#include <cuda_fp16.h>
 #include "device_launch_parameters.h"
 #include "defines.h"
 //==========================================================================
@@ -40,9 +40,9 @@ __global__ void CastingInt_Kernel(void * img_src, void * img_dst, uint src_type,
 		    	     break;
 		            }
 		    case 3: {
-		    	     unsigned short *optr= (unsigned short*) img_dst;
+		    	     half *optr= (half*) img_dst;
 		    	     int *iptr= (int*) img_src;
-		    	     optr[OffsetGray] = __float2half_rn ((float)iptr[OffsetGray]);
+		    	     optr[OffsetGray] = __float2half ((float)iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 4: {
@@ -92,9 +92,9 @@ __global__ void CastingFloat_Kernel(void * img_src, void * img_dst, uint src_typ
     		    	     break;
     		            }
     		    case 3: {
-    		    	     unsigned short *optr= (unsigned short*) img_dst;
+    		    	     half *optr= (half*) img_dst;
     		    	     float *iptr= (float*) img_src;
-    		    	     optr[OffsetGray] = __float2half_rn (iptr[OffsetGray]);
+    		    	     optr[OffsetGray] = __float2half (iptr[OffsetGray]);
     		    	     break;
     		            }
     		    case 4: {
@@ -143,9 +143,9 @@ __global__ void CastingUChar_Kernel(void * img_src, void * img_dst, uint src_typ
 		    	     break;
 		            }
 		    case 3: {
-		    	     unsigned short *optr= (unsigned short*) img_dst;
+		    	     half *optr= (half*) img_dst;
 		    	     unsigned char *iptr= (unsigned char*) img_src;
-		    	     optr[OffsetGray] = __float2half_rn ((float)iptr[OffsetGray]);
+		    	     optr[OffsetGray] = __float2half ((float)iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 4: {
@@ -177,39 +177,39 @@ __global__ void CastingHalfFloat_Kernel(void * img_src, void * img_dst, uint src
 		{
 		    case 0: {
 		    	     int *optr= (int*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *iptr= (half*) img_src;
 		    	     optr[OffsetGray] = (int)__half2float(iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 1: {//float
 		    	     float *optr= (float*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *iptr= (half*) img_src;
 		    	     optr[OffsetGray] = (float)__half2float(iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 2: {
 		    	     unsigned char *optr= (unsigned char*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *iptr= (half*) img_src;
 
 		    	     optr[OffsetGray] = (unsigned char)__half2float(iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 3: {
-		    	     unsigned short *optr= (unsigned short*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *optr= (half*) img_dst;
+		    	     half *iptr= (half*) img_src;
 		    	     optr[OffsetGray] = iptr[OffsetGray];
 		    	     break;
 		            }
 		    case 4: {
 
 		    	     double *optr= (double*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *iptr= (half*) img_src;
 		    	     optr[OffsetGray] = (double)__half2float(iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 5: {
 		    	     unsigned int *optr= (unsigned int*) img_dst;
-		    	     unsigned short *iptr= (unsigned short*) img_src;
+		    	     half *iptr= (half*) img_src;
 		    	     optr[OffsetGray] = (unsigned int)__half2float(iptr[OffsetGray]);
 		    	     break;
 		            }
@@ -246,9 +246,9 @@ __global__ void CastingDouble_Kernel(void * img_src, void * img_dst, uint src_ty
 		    	     break;
 		            }
 		    case 3: {
-		    	     unsigned short *optr= (unsigned short*) img_dst;
+		    	     half *optr= (half*) img_dst;
 		    	     double *iptr= (double*) img_src;
-		    	     optr[OffsetGray] = __float2half_rn ((float)iptr[OffsetGray]);
+		    	     optr[OffsetGray] = __float2half ((float)iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 4: {
@@ -297,9 +297,9 @@ __global__ void CastingUint_Kernel(void * img_src, void * img_dst, uint src_type
 		    	     break;
 		            }
 		    case 3: {
-		    	     unsigned short *optr= (unsigned short*) img_dst;
+		    	     half *optr= (half*) img_dst;
 		    	     unsigned int *iptr= (unsigned int*) img_src;
-		    	     optr[OffsetGray] = __float2half_rn ((float)iptr[OffsetGray]);
+		    	     optr[OffsetGray] = __float2half ((float)iptr[OffsetGray]);
 		    	     break;
 		            }
 		    case 4: {
@@ -319,7 +319,7 @@ __global__ void CastingUint_Kernel(void * img_src, void * img_dst, uint src_type
 	}
 }
 //-----------------------------------------------------------------------------------------
-__global__ void Init_half_float_Kernel(unsigned short * img_dst, float Value, int Width, int Height)
+__global__ void Init_half_float_Kernel(half * img_dst, float Value, int Width, int Height)
 {
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
 	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -327,7 +327,7 @@ __global__ void Init_half_float_Kernel(unsigned short * img_dst, float Value, in
     //------------------------------------------------------------------
 	if (globalX<(Width) && globalY<(Height))
     {
-		img_dst[OffsetIm]=__float2half_rn(Value);
+		img_dst[OffsetIm]=__float2half(Value);
 	}
 }
 //-----------------------------------------------------------------------------------------
@@ -586,14 +586,14 @@ TGpuMem::TGpuMemHalfFloat::TGpuMemHalfFloat(void *Gpu_,uint Width =0,uint Height
 
 }
 //-----------------------------------------------------------------------------------------
-void TGpuMem::TGpuMemHalfFloat::CopyToDevice(unsigned short *h_Mem)
+void TGpuMem::TGpuMemHalfFloat::CopyToDevice(half *h_Mem)
 {
 	TGpuMem::TGpuCoreMem::CopyToDevice((void *)h_Mem);
 }
 //-----------------------------------------------------------------------------------------
-/*unsigned short * TGpuMem::TGpuMemHalfFloat::CopyFromDevice()
+/*half * TGpuMem::TGpuMemHalfFloat::CopyFromDevice()
 {
-   return (unsigned short *) TGpuMem::TGpuCoreMem::CopyFromDevice();
+   return (half *) TGpuMem::TGpuCoreMem::CopyFromDevice();
 }*/
 //-----------------------------------------------------------------------------------------
 float * TGpuMem::TGpuMemHalfFloat::CopyFromDevice()
@@ -608,12 +608,12 @@ float * TGpuMem::TGpuMemHalfFloat::CopyFromDevice()
    return Vector;
 }
 //-----------------------------------------------------------------------------------------
-unsigned short * TGpuMem::TGpuMemHalfFloat::GetMemory()
+half * TGpuMem::TGpuMemHalfFloat::GetMemory()
 {
-	return (unsigned short *) TGpuCoreMem::GetMem();
+	return (half *) TGpuCoreMem::GetMem();
 }
 //-----------------------------------------------------------------------------------------
-void TGpuMem::TGpuMemHalfFloat::SetMem(unsigned short * Mem_)
+void TGpuMem::TGpuMemHalfFloat::SetMem(half * Mem_)
 {
 	TGpuCoreMem::SetMem((void *) Mem_);
 }
@@ -626,14 +626,14 @@ void TGpuMem::TGpuMemHalfFloat::Init(float value)
     dim3 numThreads = dim3(((TGpu *)Gpu)->GetBlockX(), ((TGpu *)Gpu)->GetBlockY(), 1);
     dim3 numBlocks =  dim3(((TGpu *)Gpu)->iDivUp(d_Width, numThreads.x), ((TGpu *)Gpu)->iDivUp( d_Height, numThreads.y));
 	//----------------------------------------------------------------------------------------------------
-    Init_half_float_Kernel<<<numBlocks, numThreads>>>((unsigned short *)d_Mem, value, d_Width, d_Height);
+    Init_half_float_Kernel<<<numBlocks, numThreads>>>((half *)d_Mem, value, d_Width, d_Height);
 	cudaThreadSynchronize();
 }
 //-----------------------------------------------------------------------------------------
 void TGpuMem::TGpuMemHalfFloat::Copy(TGpuMemHalfFloat * MemDst)
 {
 	if (d_Size==MemDst->d_Size)
-	    cudaMemcpy(MemDst->d_Mem, d_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyDeviceToDevice);
+	    cudaMemcpy(MemDst->d_Mem, d_Mem, sizeof(half) * d_Size, cudaMemcpyDeviceToDevice);
 	else
 		throw std::invalid_argument( "Different vectors' size" );
 }
@@ -685,7 +685,7 @@ unsigned char * TGpuMem::TGpuMemUChar::CopyFromDevice()
 //-----------------------------------------------------------------------------------------
 void TGpuMem::TGpuMemUChar::WriteFileFromDevice(const char * File)
 {
-	TMathUtils * myUtils = new TMathUtils();
+	//TMathUtils * myUtils = new TMathUtils();
 	ofstream outfile;
     outfile.open(File);
     unsigned char * h_Mem = (unsigned char*)CopyFromDevice();
@@ -861,7 +861,7 @@ TGpuMem::TGpuCoreMem::TGpuCoreMem(void *Gpu_,uint Width,uint Height,uint Channel
 		            }
 		    case t_half_float: //half_float
 		    		{
-				      CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(unsigned short) * d_Size));
+				      CUDA_CHECK_RETURN(cudaMalloc((void**) &d_Mem, sizeof(half) * d_Size));
 			    	  break;
 		            }
 		    case t_double: //double
@@ -903,7 +903,7 @@ void TGpuMem::TGpuCoreMem::CopyToDevice(void *h_Mem)
 		            }
 		    case t_half_float: //half_float
 		    		{
-					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyHostToDevice));
+					  CUDA_CHECK_RETURN(cudaMemcpy(d_Mem, h_Mem, sizeof(half) * d_Size, cudaMemcpyHostToDevice));
 			    	  break;
 		            }
 		    case t_double: //double
@@ -948,8 +948,8 @@ void * TGpuMem::TGpuCoreMem::CopyFromDevice( )
 		            }
 		    case t_half_float: //half_float
 		    		{
-					  void * h_Mem= new unsigned short[d_Size];
-					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(unsigned short) * d_Size, cudaMemcpyDeviceToHost));
+					  void * h_Mem= new half[d_Size];
+					  CUDA_CHECK_RETURN(cudaMemcpy(h_Mem, d_Mem, sizeof(half) * d_Size, cudaMemcpyDeviceToHost));
 					  return h_Mem;
 
 		            }

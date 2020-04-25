@@ -4,6 +4,21 @@
  *  Created on: 23/02/2015
  *      Author: pablo
  */
+//#ifdef __INTELLISENSE__
+//#ifndef __CUDACC__ 
+//#define __CUDACC__
+//#endif
+//
+//#ifdef __CUDACC__
+//#define cuda_SYNCTHREADS() __syncthreads()
+//#else
+//#define cuda_SYNCTHREADS()
+//#endif
+//#endif 
+#ifndef __CUDACC__ 
+#define __CUDACC__
+#endif
+
 
 #include "TCVFilters.h"
 
@@ -15,6 +30,8 @@
 #include "CVCudaUtils.cuh"
 #include "cuda_fp16.h"
 #include "device_launch_parameters.h"
+#include "device_functions.h"
+#include <math.h>
 using namespace std;
 //#include "CVCudaUtils.cuh"
 //==========================================================================
@@ -38,7 +55,7 @@ __device__ uint HammingDistance2(uint x,uint y)
   return dist;
 }
 //==========================================================================
-__global__ void Median3x3_Kernel(unsigned short * MemSrc, unsigned short * MemDst, int Width, int Height)
+__global__ void Median3x3_Kernel(half * MemSrc, half * MemDst, int Width, int Height)
 {
 
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -174,8 +191,9 @@ __global__ void Median3x3_Kernel(unsigned short * MemSrc, unsigned short * MemDs
 	        r4 = min(r4, r6);
 	        r5 = min(r5, r7);
 
+
 	        //store found median into result
-	        MemDst[OffsetIm]= __float2half_rn(min(r4, r5));
+	        MemDst[OffsetIm]= __float2half(min(r4, r5));
 		   //===============================================================================================
 	}
     else
@@ -185,7 +203,7 @@ __global__ void Median3x3_Kernel(unsigned short * MemSrc, unsigned short * MemDs
 	}
 }
 //==========================================================================
-__global__ void Separable_Convolution_H_Kernel(unsigned short * MemSrc, unsigned short * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
+__global__ void Separable_Convolution_H_Kernel(half * MemSrc, half * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -221,20 +239,26 @@ __global__ void Separable_Convolution_H_Kernel(unsigned short * MemSrc, unsigned
 
 			if ((globalX+(i-HalfFilter)) >= 0 && (globalX+(i-HalfFilter)) < Width)
 			{
+
 				Value =	__half2float(MemSrc[Pos])*FilterCache[i];
+
 	  		    Result=Result+Value;
 			}
 			else
 			{
+
 			    Value = __half2float(MemSrc[GlobalOffset])*FilterCache[i];
+
 			    Result=Result+Value;
 			}
 	   }
-	   MemDst[GlobalOffset]=__float2half_rn(Result);
+
+	   MemDst[GlobalOffset]=__float2half(Result);
+
 	 }
 }
 //==========================================================================
-__global__ void Separable_Convolution_V_Kernel(unsigned short * MemSrc, unsigned short * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
+__global__ void Separable_Convolution_V_Kernel(half * MemSrc, half * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -269,21 +293,25 @@ __global__ void Separable_Convolution_V_Kernel(unsigned short * MemSrc, unsigned
 
 			if ((globalY+(i-HalfFilter)) >= 0 && (globalY+(i-HalfFilter)) < Height)
 			{
+
 				Value =	__half2float(MemSrc[Pos])*FilterCache[i];
 	  		    Result=Result+Value;
 			}
 			else
 			{
 			    Value = __half2float(MemSrc[GlobalOffset])*FilterCache[i];
+
 			    Result=Result+Value;
 			}
 	   }
-	   MemDst[GlobalOffset]=__float2half_rn(Result);
+
+	   MemDst[GlobalOffset]=__float2half(Result);
+
 	 }
 }
 //==========================================================================
 //==========================================================================
-__global__ void Separable_Convolution_H_Kernel(unsigned char * MemSrc, unsigned short * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
+__global__ void Separable_Convolution_H_Kernel(unsigned char * MemSrc, half * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -326,11 +354,12 @@ __global__ void Separable_Convolution_H_Kernel(unsigned char * MemSrc, unsigned 
 			    Result=Result+Value;
 			}
 	   }
-	   MemDst[GlobalOffset]=__float2half_rn(Result);
+
+	   MemDst[GlobalOffset]=__float2half(Result);
 	 }
 }
 //==========================================================================
-__global__ void Separable_Convolution_V_Kernel(unsigned char * MemSrc, unsigned short * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
+__global__ void Separable_Convolution_V_Kernel(unsigned char * MemSrc, half * MemDst,float * MemFilter,int FilterSize, int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -376,11 +405,13 @@ __global__ void Separable_Convolution_V_Kernel(unsigned char * MemSrc, unsigned 
 			    Result=Result+Value;
 			}
 	   }
-	   MemDst[GlobalOffset]=__float2half_rn(Result);
+
+	   MemDst[GlobalOffset]=__float2half(Result);
+
 	 }
 }
 //==========================================================================
-__global__ void FirstOrderStructureTensor_Kernel(unsigned short * MemSrc,unsigned short * MemIx2,unsigned short * MemIy2, unsigned short * MemIxIy,int Width, int Height)
+__global__ void FirstOrderStructureTensor_Kernel(half * MemSrc,half * MemIx2,half * MemIy2, half * MemIxIy,int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -393,26 +424,27 @@ __global__ void FirstOrderStructureTensor_Kernel(unsigned short * MemSrc,unsigne
     //------------------------------------------------------------------
 	if (globalX>0 && globalX<(Width-1) && globalY>0 && globalY<(Height-1))
 	{
-		// Ori
+ 		// Ori
 		Ix=((float)(__half2float(MemSrc[GlobalOffset+1])-__half2float(MemSrc[GlobalOffset-1])))/2.0f;
 		Iy=((float)(__half2float(MemSrc[GlobalOffset+Width])-__half2float(MemSrc[GlobalOffset-Width])))/2.0f;
 
-	    MemIx2[GlobalOffset]= __float2half_rn(Ix*Ix);
-	    MemIy2[GlobalOffset]= __float2half_rn(Iy*Iy);
-	    MemIxIy[GlobalOffset]= __float2half_rn(Ix*Iy);
+	    MemIx2[GlobalOffset]= __float2half(Ix*Ix);
+	    MemIy2[GlobalOffset]= __float2half(Iy*Iy);
+	    MemIxIy[GlobalOffset]= __float2half(Ix*Iy);
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 		{
-			MemIx2[GlobalOffset]= __float2half_rn(0.0f);
-			MemIy2[GlobalOffset]= __float2half_rn(0.0f);
-			MemIxIy[GlobalOffset]= __float2half_rn(0.0f);
+
+			MemIx2[GlobalOffset]= __float2half(0.0f);
+			MemIy2[GlobalOffset]= __float2half(0.0f);
+			MemIxIy[GlobalOffset]= __float2half(0.0f);
 		}
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void CensusDerivates_Kernel(unsigned int * MemSrc1,unsigned int * MemSrc2,unsigned short * MemIx,unsigned short * MemIy, unsigned short * MemIt,int Width, int Height)
+__global__ void CensusDerivates_Kernel(unsigned int * MemSrc1,unsigned int * MemSrc2,half * MemIx,half * MemIy, half * MemIt,int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -437,17 +469,18 @@ __global__ void CensusDerivates_Kernel(unsigned int * MemSrc1,unsigned int * Mem
 		Iy=((float)(HammingDistance2(MemSrc2[GlobalOffset+Width],CentralPixel))-(float)(HammingDistance2(MemSrc2[GlobalOffset-Width],CentralPixel)))*(1.0f/1.0f);
 		It=((float)(HammingDistance2(MemSrc2[GlobalOffset],CentralPixel)))*(1.0f/4.0f);
 
-	    MemIx[GlobalOffset]= __float2half_rn(Ix);
-	    MemIy[GlobalOffset]= __float2half_rn(Iy);
-	    MemIt[GlobalOffset]= __float2half_rn(It);
+	    MemIx[GlobalOffset]= __float2half(Ix);
+	    MemIy[GlobalOffset]= __float2half(Iy);
+	    MemIt[GlobalOffset]= __float2half(It);
     }
 	else
 	{
 		if (globalX>=0 && globalX<Width && globalY>=0 && globalY<Height)
 		{
-			MemIx[GlobalOffset]= __float2half_rn(0.0f);
-			MemIy[GlobalOffset]= __float2half_rn(0.0f);
-			MemIt[GlobalOffset]= __float2half_rn(0.0f);
+
+			MemIx[GlobalOffset]= __float2half(0.0f);
+			MemIy[GlobalOffset]= __float2half(0.0f);
+			MemIt[GlobalOffset]= __float2half(0.0f);
 		}
 	}
 }

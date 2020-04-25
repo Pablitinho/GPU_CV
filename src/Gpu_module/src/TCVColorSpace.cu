@@ -1,6 +1,11 @@
 #include "TCVColorSpace.h"
-#include "device_launch_parameters.h"
+#include <cuda.h>
+#include <cuda_runtime_api.h>
+#include <typeinfo>
+#include <stdio.h>
+#include "CVCudaUtils.cuh"
 #include "cuda_fp16.h"
+#include "device_launch_parameters.h"
 //==========================================================================
 // Kernels
 //==========================================================================
@@ -18,7 +23,7 @@ __global__ void RgbToGray_Kernel(unsigned char * RGB_Image, unsigned char * Gray
     }
 }
 //==========================================================================
-__global__ void RgbToGray_hf_Kernel(unsigned char * RGB_Image, unsigned short * Gray_Image, int Width, int Height)
+__global__ void RgbToGray_hf_Kernel(unsigned char * RGB_Image, half * Gray_Image, int Width, int Height)
 {
     //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -26,9 +31,9 @@ __global__ void RgbToGray_hf_Kernel(unsigned char * RGB_Image, unsigned short * 
     int OffsetGray = (globalY * Width + globalX);
     int OffsetColor = (globalY * Width + globalX)*3;
     //------------------------------------------------------------------
-    if(globalX>=0 && globalX<Width && globalY>=0 && globalY<Height)
+    if(globalX<Width && globalY<Height)
     {
-       Gray_Image[OffsetGray] = __float2half_rn((float)(0.114f*RGB_Image[OffsetColor]+0.587f*RGB_Image[OffsetColor+1]+0.299f*RGB_Image[OffsetColor+2]));
+       Gray_Image[OffsetGray] = __float2half((float)(0.114f*RGB_Image[OffsetColor]+0.587f*RGB_Image[OffsetColor+1]+0.299f*RGB_Image[OffsetColor+2]));
     }
 }
 //==========================================================================

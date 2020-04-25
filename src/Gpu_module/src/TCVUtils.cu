@@ -7,12 +7,16 @@
 
 #include "TCVUtils.h"
 #include "defines.h"
-#include "cuda_fp16.h"
+#include <cuda.h>
+#include <cuda_runtime_api.h>
+#include "CVCudaUtils.cuh"
+#include <cuda_fp16.h>
 #include "device_launch_parameters.h"
+#include "device_functions.h"
 //==========================================================================
 // Kernels
 //==========================================================================
-__global__ void Padding_Kernel(unsigned short * MemSrc, unsigned short * MemDst,uint Xoffset,uint Yoffset, float Value,int WidthSrc, int HeightSrc,int WidthDst, int HeightDst)
+__global__ void Padding_Kernel(half * MemSrc, half * MemDst,uint Xoffset,uint Yoffset, float Value,int WidthSrc, int HeightSrc,int WidthDst, int HeightDst)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -26,11 +30,11 @@ __global__ void Padding_Kernel(unsigned short * MemSrc, unsigned short * MemDst,
 	}
 	else if (globalX>=0 && globalY>=0 && globalX<WidthDst && globalY<HeightDst)
 	{
-		MemDst[iGlobalOffsetDst]= __float2half_rn(Value);
+		MemDst[iGlobalOffsetDst]= __float2half(Value);
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Replicate_H_Kernel(unsigned short * MemU, unsigned short * MemV,unsigned short * MemUOut, unsigned short * MemVOut,int Width, int Height)
+__global__ void Replicate_H_Kernel(half * MemU, half * MemV,half * MemUOut, half * MemVOut,int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -75,7 +79,7 @@ __global__ void Replicate_H_Kernel(unsigned short * MemU, unsigned short * MemV,
    }
 }
 //==========================================================================
-__global__ void Replicate_V_Kernel(unsigned short * MemU, unsigned short * MemV,unsigned short * MemUOut, unsigned short * MemVOut,int Width, int Height)
+__global__ void Replicate_V_Kernel(half * MemU, half * MemV,half * MemUOut, half * MemVOut,int Width, int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -120,7 +124,7 @@ __global__ void Replicate_V_Kernel(unsigned short * MemU, unsigned short * MemV,
    }
 }
 //==========================================================================
-__global__ void OpticalFlowToColor_Kernel(unsigned short * MemU,unsigned short * MemV, unsigned char * MemDst,int * MemColorWheel,float maxRad,int ncols,int Width,int Height)
+__global__ void OpticalFlowToColor_Kernel(half * MemU,half * MemV, unsigned char * MemDst,int * MemColorWheel,float maxRad,int ncols,int Width,int Height)
 {
 	//===============================================================================================
     //
@@ -175,7 +179,7 @@ __global__ void OpticalFlowToColor_Kernel(unsigned short * MemU,unsigned short *
    }
 }
 //==========================================================================
-__global__ void StereoToColor_Kernel(unsigned short * MemU, unsigned char * MemDst,int * MemColorWheel,int ncols,int Width,int Height)
+__global__ void StereoToColor_Kernel(half * MemU, unsigned char * MemDst,int * MemColorWheel,int ncols,int Width,int Height)
 {
 	//===============================================================================================
     //

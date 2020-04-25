@@ -18,7 +18,7 @@ using namespace std;
 // Kernels
 
 //==========================================================================
-__global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * MemG,unsigned short * MemU,unsigned short * MemV,unsigned short * MemP1x,unsigned short *MemP2x,unsigned short *MemP1y,unsigned short *MemP2y,unsigned short * MemAPP1x,unsigned short *MemAPP2x,unsigned short *MemAPP1y,unsigned short *MemAPP2y,float Tau,float epsi,bool FirsTime,unsigned short *MNx,unsigned short *MNy,int Width,int Height)
+__global__ void Compute_PEigen_Kernel(half * MemIm1,half * MemG,half * MemU,half * MemV,half * MemP1x,half *MemP2x,half *MemP1y,half *MemP2y,half * MemAPP1x,half *MemAPP2x,half *MemAPP1y,half *MemAPP2y,float Tau,float epsi,bool FirsTime,half *MNx,half *MNy,int Width,int Height)
 {
    //===============================================================================================
    //
@@ -143,8 +143,8 @@ __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * M
 	   TmpX=TmpX/Reprojection;
 	   TmpY=TmpY/Reprojection;
 	   //--------------------------
-	   MemP1x[GlobalOffset]=__float2half_rn(TmpX);
-	   MemP2x[GlobalOffset]=__float2half_rn(TmpY);
+	   MemP1x[GlobalOffset]=__float2half(TmpX);
+	   MemP2x[GlobalOffset]=__float2half(TmpY);
 	   //--------------------------
 	   //ReplicatePixels(MemP1x, TmpX,GlobalOffset,Width, Height);
 	   //ReplicatePixels(MemP2x, TmpY,GlobalOffset,Width, Height);
@@ -152,8 +152,8 @@ __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * M
 	   float app1=TmpX*((G_Value*(Nx*Nx)+alfa*Ny*Ny))+TmpY*((G_Value*Nx*Ny-alfa*(Nx*Ny)));
 	   float app2=TmpY*((G_Value*(Ny*Ny)+alfa*Nx*Nx))+TmpX*((G_Value*Nx*Ny-alfa*(Nx*Ny)));
 	   //--------------------------
-	   MemAPP1x[GlobalOffset]=__float2half_rn(app1);
-	   MemAPP2x[GlobalOffset]=__float2half_rn(app2);
+	   MemAPP1x[GlobalOffset]=__float2half(app1);
+	   MemAPP2x[GlobalOffset]=__float2half(app2);
 	   //--------------------------
 	   //ReplicatePixels(MemAPP1x, app1,globalX, globalY,GlobalOffset,Width, Height);
 	   //ReplicatePixels(MemAPP2x, app2,globalX, globalY,GlobalOffset,Width, Height);
@@ -181,8 +181,8 @@ __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * M
 	   TmpX=TmpX/Reprojection;
 	   TmpY=TmpY/Reprojection;
 	   //--------------------------
-	   MemP1y[GlobalOffset]=__float2half_rn(TmpX);
-	   MemP2y[GlobalOffset]=__float2half_rn(TmpY);
+	   MemP1y[GlobalOffset]=__float2half(TmpX);
+	   MemP2y[GlobalOffset]=__float2half(TmpY);
 	   //--------------------------
 	   //ReplicatePixels(MemP1y, TmpX,GlobalOffset,Width, Height);
 	   //ReplicatePixels(MemP2y, TmpY,GlobalOffset,Width, Height);
@@ -202,8 +202,8 @@ __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * M
 	   app1=TmpX*((G_Value*(Nx*Nx)+alfa*Ny*Ny))+TmpY*((G_Value*Nx*Ny-alfa*(Nx*Ny)));
 	   app2=TmpY*((G_Value*(Ny*Ny)+alfa*Nx*Nx))+TmpX*((G_Value*Nx*Ny-alfa*(Nx*Ny)));
 	   //--------------------------
-	   MemAPP1y[GlobalOffset]=__float2half_rn(app1);
-	   MemAPP2y[GlobalOffset]=__float2half_rn(app2);
+	   MemAPP1y[GlobalOffset]=__float2half(app1);
+	   MemAPP2y[GlobalOffset]=__float2half(app2);
 	   //--------------------------
 	   //ReplicatePixels(MemAPP1y, app1,globalX, globalY,GlobalOffset,Width, Height);
 	   //ReplicatePixels(MemAPP2y, app2,globalX, globalY,GlobalOffset,Width, Height);
@@ -217,23 +217,23 @@ __global__ void Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * M
 	   if (globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	   {
 		   //-------------------------------------------
-		   MemP1x[GlobalOffset]=__float2half_rn(0.0f);
-		   MemP2x[GlobalOffset]=__float2half_rn(0.0f);
+		   MemP1x[GlobalOffset]=__float2half(0.0f);
+		   MemP2x[GlobalOffset]=__float2half(0.0f);
 		   //-------------------------------------------
-		   MemAPP1x[GlobalOffset]=__float2half_rn(0.0f);
-		   MemAPP2x[GlobalOffset]=__float2half_rn(0.0f);
+		   MemAPP1x[GlobalOffset]=__float2half(0.0f);
+		   MemAPP2x[GlobalOffset]=__float2half(0.0f);
 		   //-------------------------------------------
-		   MemP1y[GlobalOffset]=__float2half_rn(0.0f);
-		   MemP2y[GlobalOffset]=__float2half_rn(0.0f);
+		   MemP1y[GlobalOffset]=__float2half(0.0f);
+		   MemP2y[GlobalOffset]=__float2half(0.0f);
 		   //-------------------------------------------
-		   MemAPP1y[GlobalOffset]=__float2half_rn(0.0f);
-		   MemAPP2y[GlobalOffset]=__float2half_rn(0.0f);
+		   MemAPP1y[GlobalOffset]=__float2half(0.0f);
+		   MemAPP2y[GlobalOffset]=__float2half(0.0f);
 		   //-------------------------------------------
 	   }
    }
 }
 //==========================================================================
-__global__ void Update_OF_Up_Vp_Kernel(unsigned short * MemU, unsigned short * MemV,unsigned short * MemUp, unsigned short * MemVp, unsigned short * DivU, unsigned short * DivV, unsigned short * MemIx, unsigned short * MemIy, unsigned short * MemIt, unsigned short *MemU0, unsigned short *MemV0, float Theta,float Sigma,float Lambda,int FirstTime,int Warped,int Width,int Height)
+__global__ void Update_OF_Up_Vp_Kernel(half * MemU, half * MemV,half * MemUp, half * MemVp, half * DivU, half * DivV, half * MemIx, half * MemIy, half * MemIt, half *MemU0, half *MemV0, float Theta,float Sigma,float Lambda,int FirstTime,int Warped,int Width,int Height)
 {
 	//===============================================================================================
     //
@@ -265,8 +265,8 @@ __global__ void Update_OF_Up_Vp_Kernel(unsigned short * MemU, unsigned short * M
          u=__half2float(MemU[GlobalOffset]);
 	     v=__half2float(MemV[GlobalOffset]);
 
-		 MemU0[GlobalOffset]=__float2half_rn(u);
-	     MemV0[GlobalOffset]=__float2half_rn(v);
+		 MemU0[GlobalOffset]=__float2half(u);
+	     MemV0[GlobalOffset]=__float2half(v);
 
 		 u0=u;
 		 v0=v;
@@ -372,8 +372,8 @@ __global__ void Update_OF_Up_Vp_Kernel(unsigned short * MemU, unsigned short * M
        //nvp=2*v-nvp;
 
 	   //------------------------------------------
-	   MemUp[GlobalOffset]=__float2half_rn(nup);
-       MemVp[GlobalOffset]=__float2half_rn(nvp);
+	   MemUp[GlobalOffset]=__float2half(nup);
+       MemVp[GlobalOffset]=__float2half(nvp);
        //------------------------------------------
 	   /*MemUp[GlobalOffset+1]=__float2half_rn(nup);
        MemVp[GlobalOffset+1]=__float2half_rn(nvp);
@@ -411,8 +411,8 @@ __global__ void Update_OF_Up_Vp_Kernel(unsigned short * MemU, unsigned short * M
 	       u=0.0;
 		   v=0.0;
 	   }
-	   MemU[GlobalOffset]=__float2half_rn(u);
-	   MemV[GlobalOffset]=__float2half_rn(v);
+	   MemU[GlobalOffset]=__float2half(u);
+	   MemV[GlobalOffset]=__float2half(v);
        //------------------------------------------
 	   /*if ((globalX+1)<Width)
 	   {
@@ -438,19 +438,19 @@ __global__ void Update_OF_Up_Vp_Kernel(unsigned short * MemU, unsigned short * M
    {
 	   if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	   {
-	 	   MemU[GlobalOffset]=__float2half_rn(0.0f);
-		   MemV[GlobalOffset]=__float2half_rn(0.0f);
+	 	   MemU[GlobalOffset]=__float2half(0.0f);
+		   MemV[GlobalOffset]=__float2half(0.0f);
 
-		   MemUp[GlobalOffset]=__float2half_rn(0.0f);
-	       MemVp[GlobalOffset]=__float2half_rn(0.0f);
+		   MemUp[GlobalOffset]=__float2half(0.0f);
+	       MemVp[GlobalOffset]=__float2half(0.0f);
 
-	       MemU0[GlobalOffset]=__float2half_rn(0.0f);
-	       MemV0[GlobalOffset]=__float2half_rn(0.0f);
+	       MemU0[GlobalOffset]=__float2half(0.0f);
+	       MemV0[GlobalOffset]=__float2half(0.0f);
 	   }
    }
 }
 //==========================================================================
-__global__ void Update_OF_Up_Vp_Prev_Kernel(unsigned short * MemU, unsigned short * MemV,unsigned short *MemG,unsigned short * MemUPrev, unsigned short * MemVPrev,unsigned short * MemUp, unsigned short * MemVp, unsigned short * DivU, unsigned short * DivV, unsigned short * MemIx, unsigned short * MemIy, unsigned short * MemIt, unsigned short *MemU0, unsigned short *MemV0, float Theta,float Sigma,float Lambda,int FirstTime,float PrevFactor,int Warped,int Width,int Height)
+__global__ void Update_OF_Up_Vp_Prev_Kernel(half * MemU, half * MemV,half *MemG,half * MemUPrev, half * MemVPrev,half * MemUp, half * MemVp, half * DivU, half * DivV, half * MemIx, half * MemIy, half * MemIt, half *MemU0, half *MemV0, float Theta,float Sigma,float Lambda,int FirstTime,float PrevFactor,int Warped,int Width,int Height)
 {
 	//===============================================================================================
     //
@@ -482,8 +482,8 @@ __global__ void Update_OF_Up_Vp_Prev_Kernel(unsigned short * MemU, unsigned shor
          u=__half2float(MemU[GlobalOffset]);
 	     v=__half2float(MemV[GlobalOffset]);
 
-		 MemU0[GlobalOffset]=__float2half_rn(u);
-	     MemV0[GlobalOffset]=__float2half_rn(v);
+		 MemU0[GlobalOffset]=__float2half(u);
+	     MemV0[GlobalOffset]=__float2half(v);
 
 		 u0=u;
 		 v0=v;
@@ -579,8 +579,8 @@ __global__ void Update_OF_Up_Vp_Prev_Kernel(unsigned short * MemU, unsigned shor
 			nvp = 0.0;
 	   }
 	   //------------------------------------------
-	   MemUp[GlobalOffset]=__float2half_rn(nup);
-       MemVp[GlobalOffset]=__float2half_rn(nvp);
+	   MemUp[GlobalOffset]=__float2half(nup);
+       MemVp[GlobalOffset]=__float2half(nvp);
 	   //----------------------------------------------------------------
 	   // Update
 	   //----------------------------------------------------------------
@@ -609,27 +609,27 @@ __global__ void Update_OF_Up_Vp_Prev_Kernel(unsigned short * MemU, unsigned shor
 		   v=0.0;
 	   }
 	   //----------------------------------------------------------------
-	   MemU[GlobalOffset]=__float2half_rn(u);
-	   MemV[GlobalOffset]=__float2half_rn(v);
+	   MemU[GlobalOffset]=__float2half(u);
+	   MemV[GlobalOffset]=__float2half(v);
 	   //----------------------------------------------------------------
    }
    else
    {
 	   if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	   {
-		   MemU[GlobalOffset]=__float2half_rn(0.0f);
-		   MemV[GlobalOffset]=__float2half_rn(0.0f);
+		   MemU[GlobalOffset]=__float2half(0.0f);
+		   MemV[GlobalOffset]=__float2half(0.0f);
 
-		   MemUp[GlobalOffset]=__float2half_rn(0.0f);
-	       MemVp[GlobalOffset]=__float2half_rn(0.0f);
+		   MemUp[GlobalOffset]=__float2half(0.0f);
+	       MemVp[GlobalOffset]=__float2half(0.0f);
 
-	       MemU0[GlobalOffset]=__float2half_rn(0.0f);
-	       MemV0[GlobalOffset]=__float2half_rn(0.0f);
+	       MemU0[GlobalOffset]=__float2half(0.0f);
+	       MemV0[GlobalOffset]=__float2half(0.0f);
 	   }
    }
 }
 //==========================================================================
-__global__ void Iter_Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned short * MemG,unsigned short * MemU,unsigned short * MemV,unsigned short * MemP1x,unsigned short *MemP2x,unsigned short *MemP1y,unsigned short *MemP2y,unsigned short * MemAPP1x,unsigned short *MemAPP2x,unsigned short *MemAPP1y,unsigned short *MemAPP2y,float Tau,float epsi,bool FirstTime,unsigned short *MNx,unsigned short *MNy,int numBlocksx,int numBlocksy,int numThreadsx,int numThreadsy,int Width,int Height)
+__global__ void Iter_Compute_PEigen_Kernel(half * MemIm1,half * MemG,half * MemU,half * MemV,half * MemP1x,half *MemP2x,half *MemP1y,half *MemP2y,half * MemAPP1x,half *MemAPP2x,half *MemAPP1y,half *MemAPP2y,float Tau,float epsi,bool FirstTime,half *MNx,half *MNy,int numBlocksx,int numBlocksy,int numThreadsx,int numThreadsy,int Width,int Height)
 {
 	//===============================================================================================
     //
@@ -639,15 +639,15 @@ __global__ void Iter_Compute_PEigen_Kernel(unsigned short * MemIm1,unsigned shor
     //------------------------------------------------------------------
     if (globalX==0)
     {
-    	for (int i=0;i<2;i++)
+    	//for (int i=0;i<2;i++)
 
-    		Compute_PEigen_Kernel<<<(numBlocksx,numBlocksy,1), (numThreadsx,numThreadsy,1)>>>(MemIm1,MemG, MemU,MemV, MemP1x,MemP2x,MemP1y,MemP2y,MemAPP1x,MemAPP2x,MemAPP1y,MemAPP2y,Tau,epsi,FirstTime,MNx,MNy,Width, Height);
-			cudaDeviceSynchronize();
+    		//Compute_PEigen_Kernel<<<(numBlocksx,numBlocksy,1), (numThreadsx,numThreadsy,1)>>>(MemIm1,MemG, MemU,MemV, MemP1x,MemP2x,MemP1y,MemP2y,MemAPP1x,MemAPP2x,MemAPP1y,MemAPP2y,Tau,epsi,FirstTime,MNx,MNy,Width, Height);
+			//cudaDeviceSynchronize();
     }
 
 }
 //==========================================================================
-__global__ void OpticalFlow_Threshold_Kernel(unsigned short * MemUSrc, unsigned short * MemVSrc, unsigned short * MemUDst, unsigned short * MemVDst,float Value,bool GreatEqual, int Width, int Height)
+__global__ void OpticalFlow_Threshold_Kernel(half * MemUSrc, half * MemVSrc, half * MemUDst, half * MemVDst,float Value,bool GreatEqual, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -664,8 +664,8 @@ __global__ void OpticalFlow_Threshold_Kernel(unsigned short * MemUSrc, unsigned 
 		{
 			if (Norm<=Value)
 			{
-				MemUDst[GlobalOffset]= __float2half_rn(0.0f);
-				MemVDst[GlobalOffset]= __float2half_rn(0.0f);
+				MemUDst[GlobalOffset]= __float2half(0.0f);
+				MemVDst[GlobalOffset]= __float2half(0.0f);
 			}
 			else
 			{
@@ -677,8 +677,8 @@ __global__ void OpticalFlow_Threshold_Kernel(unsigned short * MemUSrc, unsigned 
 		{
 			if (Norm>=Value)
 			{
-				MemUDst[GlobalOffset]= __float2half_rn(0.0f);
-				MemVDst[GlobalOffset]= __float2half_rn(0.0f);
+				MemUDst[GlobalOffset]= __float2half(0.0f);
+				MemVDst[GlobalOffset]= __float2half(0.0f);
 			}
 			else
 			{
@@ -1030,7 +1030,8 @@ void TCVMotion::GeneratePyramid(TGpuMem::TGpuMemUChar  * MemSrc,TGpuMem::TGpuMem
 		 MemSrc->Casting(MemPyramid[0]);
 		 for (int i=0;i<Scales-1;i++)
 		 {
-			 ((TGpu *)Gpu)->CV->Geometry->Resize(MemPyramid[i],MemPyramid[i+1]);
+			 //((TGpu *)Gpu)->CV->Geometry->Resize(MemPyramid[i],MemPyramid[i+1]);
+			 ((TGpu *)Gpu)->CV->Geometry->ResizeBilinear(MemPyramid[i], MemPyramid[i + 1]);
 		 }
 	 }
 }
@@ -1084,8 +1085,10 @@ void TCVMotion::AniTVL1(TGpuMem::TGpuMemHalfFloat  * MemSrc1,TGpuMem::TGpuMemHal
          if (i != 0)
          {
              //-----------------------------------
-        	 ((TGpu *)Gpu)->CV->Geometry->Resize(MemU[i], MemU[i - 1]);
-        	 ((TGpu *)Gpu)->CV->Geometry->Resize(MemV[i], MemV[i - 1]);
+        	 //((TGpu *)Gpu)->CV->Geometry->Resize(MemU[i], MemU[i - 1]);
+        	 //((TGpu *)Gpu)->CV->Geometry->Resize(MemV[i], MemV[i - 1]);
+			 ((TGpu *)Gpu)->CV->Geometry->ResizeBilinear(MemU[i], MemU[i - 1]);
+			 ((TGpu *)Gpu)->CV->Geometry->ResizeBilinear(MemV[i], MemV[i - 1]);
              //-----------------------------------
              FactorX = (float)MemU[i - 1]->Width() / (float)MemU[i]->Width();
              FactorY = (float)MemU[i - 1]->Height() / (float)MemU[i]->Height();

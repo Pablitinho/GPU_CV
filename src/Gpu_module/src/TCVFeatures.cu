@@ -6,13 +6,17 @@
  */
 
 #include "TCVFeatures.h"
-#include <fstream>
-#include <iostream>
-
+//#include <fstream>
+//#include <iostream>
+#include <stdio.h>
 #include <typeinfo>
+
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 #include "CVCudaUtils.cuh"
-#include "cuda_fp16.h"
+#include <cuda_fp16.h>
 #include "device_launch_parameters.h"
+#include "device_functions.h"
 using namespace std;
 //==========================================================================
 // Kernels
@@ -188,7 +192,7 @@ __global__ void Census_Kernel(unsigned char * MemSrc, unsigned int * MemDst, int
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Census_Kernel(unsigned short * MemSrc, unsigned int * MemDst, int eps, int Width, int Height)
+__global__ void Census_Kernel(half * MemSrc, unsigned int * MemDst, int eps, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -214,7 +218,7 @@ __global__ void Census_Kernel(unsigned short * MemSrc, unsigned int * MemDst, in
     //------------------------------------------------------------------
 	if (globalX>1 && globalX<(Width-2) && globalY>1 && globalY<(Height-2))
 	{
-	    ValueCenter=__half2float(MemSrc[GlobalOffset]);
+	    ValueCenter= __half2float(MemSrc[GlobalOffset]);
 		//ValueCenter=DataCache[OffsetLocal];
 
 	    #pragma unroll
@@ -225,7 +229,7 @@ __global__ void Census_Kernel(unsigned short * MemSrc, unsigned int * MemDst, in
 			{
 				if (!(dx==0 && dy==0))
 			    {
-					Value=__half2float(MemSrc[(globalY+dy) * Width + (globalX+dx)]);
+					Value= __half2float(MemSrc[(globalY+dy) * Width + (globalX+dx)]);
 					//Value=DataCache[(threadY+dy) * blockDimX + (threadX+dx)];
 		            //---------------------------------------------------------------------
 					// Ternary
@@ -281,7 +285,7 @@ __global__ void Census_Kernel(unsigned short * MemSrc, unsigned int * MemDst, in
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void DiffusionWeight_Kernel(unsigned char * MemSrc,unsigned short * MemDst,float alpha,float beta, int Width, int Height)
+__global__ void DiffusionWeight_Kernel(unsigned char * MemSrc,half * MemDst,float alpha,float beta, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -301,17 +305,17 @@ __global__ void DiffusionWeight_Kernel(unsigned char * MemSrc,unsigned short * M
 	   float Grad= sqrt(dH*dH + dV*dV);
 
 	   Result=exp(-alpha*pow(Grad,beta));
-	   MemDst[GlobalOffset]= __float2half_rn(Result);
+	   MemDst[GlobalOffset]= __float2half(Result);
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-	    	MemDst[GlobalOffset] = __float2half_rn(0.0f);
+	    	MemDst[GlobalOffset] = __float2half(0.0f);
 	}
 
 }
 //--------------------------------------------------------------------------
-__global__ void DiffusionWeight_Kernel(unsigned short * MemSrc,unsigned short * MemDst,float alpha,float beta, int Width, int Height)
+__global__ void DiffusionWeight_Kernel(half * MemSrc,half * MemDst,float alpha,float beta, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -331,16 +335,16 @@ __global__ void DiffusionWeight_Kernel(unsigned short * MemSrc,unsigned short * 
 	   float Grad= sqrt(dH*dH + dV*dV);
 
 	   Result=exp(-alpha*pow(Grad,beta));
-	   MemDst[GlobalOffset]= __float2half_rn(Result);
+	   MemDst[GlobalOffset]= __float2half(Result);
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
-	    	MemDst[GlobalOffset] = __float2half_rn(0.0f);
+	    	MemDst[GlobalOffset] = __float2half(0.0f);
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Derivate_Kernel(unsigned char * MemSrc,unsigned short * MemIx,unsigned short * MemIy, int Width, int Height)
+__global__ void Derivate_Kernel(unsigned char * MemSrc,half * MemIx,half * MemIy, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -352,20 +356,20 @@ __global__ void Derivate_Kernel(unsigned char * MemSrc,unsigned short * MemIx,un
     //------------------------------------------------------------------
 	if (globalX>0 && globalX<(Width-1) && globalY>0 && globalY<(Height-1))
 	{
-	    MemIx[GlobalOffset]= __float2half_rn((float)((MemSrc[GlobalOffset+1])-(float)(MemSrc[GlobalOffset-1]))/2.0f);
-	    MemIy[GlobalOffset]= __float2half_rn((float)((MemSrc[GlobalOffset+Width])-(float)(MemSrc[GlobalOffset-Width]))/2.0f);
+	    MemIx[GlobalOffset]= __float2half((float)((MemSrc[GlobalOffset+1])-(float)(MemSrc[GlobalOffset-1]))/2.0f);
+	    MemIy[GlobalOffset]= __float2half((float)((MemSrc[GlobalOffset+Width])-(float)(MemSrc[GlobalOffset-Width]))/2.0f);
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 	   {
-		   MemIx[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIy[GlobalOffset]= __float2half_rn(0.0f);
+		   MemIx[GlobalOffset]= __float2half(0.0f);
+		   MemIy[GlobalOffset]= __float2half(0.0f);
 	   }
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Derivate_Kernel(unsigned short * MemSrc,unsigned short * MemIx,unsigned short * MemIy, int Width, int Height)
+__global__ void Derivate_Kernel(half * MemSrc,half * MemIx,half * MemIy, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -377,21 +381,22 @@ __global__ void Derivate_Kernel(unsigned short * MemSrc,unsigned short * MemIx,u
     //------------------------------------------------------------------
 	if (globalX>0 && globalX<(Width-1) && globalY>0 && globalY<(Height-1))
 	{
+		
 		// Ori
-	    MemIx[GlobalOffset]= __float2half_rn((float)(__half2float(MemSrc[GlobalOffset+1])-__half2float(MemSrc[GlobalOffset-1]))/2.0f);
-	    MemIy[GlobalOffset]= __float2half_rn((float)(__half2float(MemSrc[GlobalOffset+Width])-__half2float(MemSrc[GlobalOffset-Width]))/2.0f);
+	    MemIx[GlobalOffset]= __float2half((float)(__half2float(MemSrc[GlobalOffset+1])-__half2float(MemSrc[GlobalOffset-1]))/2.0f);
+	    MemIy[GlobalOffset]= __float2half((float)(__half2float(MemSrc[GlobalOffset+Width])-__half2float(MemSrc[GlobalOffset-Width]))/2.0f);
     }
 	else
 	{
 	   if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 	   {
-		   MemIx[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIy[GlobalOffset]= __float2half_rn(0.0f);
+		   MemIx[GlobalOffset]= __float2half(0.0f);
+		   MemIy[GlobalOffset]= __float2half(0.0f);
 	   }
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Derivate_Kernel(unsigned char * MemSrc1,unsigned char * MemSrc2,unsigned short * MemIx,unsigned short * MemIy,unsigned short * MemIt, int Width, int Height)
+__global__ void Derivate_Kernel(unsigned char * MemSrc1,unsigned char * MemSrc2,half * MemIx,half * MemIy,half * MemIt, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -403,22 +408,22 @@ __global__ void Derivate_Kernel(unsigned char * MemSrc1,unsigned char * MemSrc2,
     //------------------------------------------------------------------
 	if (globalX>0 && globalX<(Width-1) && globalY>0 && globalY<(Height-1))
 	{
-	    MemIx[GlobalOffset]= __float2half_rn((float)((MemSrc1[GlobalOffset+1])-(float)(MemSrc1[GlobalOffset-1]))/2.0f);
-	    MemIy[GlobalOffset]= __float2half_rn((float)((MemSrc1[GlobalOffset+Width])-(float)(MemSrc1[GlobalOffset-Width]))/2.0f);
-	    MemIt[GlobalOffset]= __float2half_rn((float)((MemSrc1[GlobalOffset+Width])-(MemSrc2[GlobalOffset-Width])));
+	    MemIx[GlobalOffset]= __float2half((float)((MemSrc1[GlobalOffset+1])-(float)(MemSrc1[GlobalOffset-1]))/2.0f);
+	    MemIy[GlobalOffset]= __float2half((float)((MemSrc1[GlobalOffset+Width])-(float)(MemSrc1[GlobalOffset-Width]))/2.0f);
+	    MemIt[GlobalOffset]= __float2half((float)((MemSrc1[GlobalOffset+Width])-(MemSrc2[GlobalOffset-Width])));
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 	   {
-		   MemIx[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIy[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIt[GlobalOffset]= __float2half_rn(0.0f);
+		   MemIx[GlobalOffset]= __float2half(0.0f);
+		   MemIy[GlobalOffset]= __float2half(0.0f);
+		   MemIt[GlobalOffset]= __float2half(0.0f);
 	   }
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Derivate_Kernel(unsigned short * MemSrc1,unsigned short * MemSrc2,unsigned short * MemIx,unsigned short * MemIy,unsigned short * MemIt, int Width, int Height)
+__global__ void Derivate_Kernel(half * MemSrc1,half * MemSrc2,half * MemIx,half * MemIy,half * MemIt, int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -430,22 +435,22 @@ __global__ void Derivate_Kernel(unsigned short * MemSrc1,unsigned short * MemSrc
     //------------------------------------------------------------------
 	if (globalX>0 && globalX<(Width-1) && globalY>0 && globalY<(Height-1))
 	{
-	    MemIx[GlobalOffset]= __float2half_rn((float)(__half2float(MemSrc1[GlobalOffset+1])-(float)__half2float(MemSrc1[GlobalOffset-1]))/2.0f);
-	    MemIy[GlobalOffset]= __float2half_rn((float)(__half2float(MemSrc1[GlobalOffset+Width])-(float)__half2float(MemSrc1[GlobalOffset-Width]))/2.0f);
-	    MemIt[GlobalOffset]= __float2half_rn((float)(__half2float(MemSrc1[GlobalOffset+Width])-__half2float(MemSrc2[GlobalOffset-Width])));
+	    MemIx[GlobalOffset]= __float2half((float)(__half2float(MemSrc1[GlobalOffset+1])-(float)__half2float(MemSrc1[GlobalOffset-1]))/2.0f);
+	    MemIy[GlobalOffset]= __float2half((float)(__half2float(MemSrc1[GlobalOffset+Width])-(float)__half2float(MemSrc1[GlobalOffset-Width]))/2.0f);
+	    MemIt[GlobalOffset]= __float2half((float)(__half2float(MemSrc1[GlobalOffset+Width])-__half2float(MemSrc2[GlobalOffset-Width])));
     }
 	else
 	{
 	   if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 	   {
-		   MemIx[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIy[GlobalOffset]= __float2half_rn(0.0f);
-		   MemIt[GlobalOffset]= __float2half_rn(0.0f);
+		   MemIx[GlobalOffset]= __float2half(0.0f);
+		   MemIy[GlobalOffset]= __float2half(0.0f);
+		   MemIt[GlobalOffset]= __float2half(0.0f);
 	   }
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void EigenVectors_Kernel(unsigned short * MemIx2,unsigned short * MemIy2,unsigned short * MemIxIy,unsigned short * MemNx,unsigned short * MemNy ,int Width, int Height)
+__global__ void EigenVectors_Kernel(half * MemIx2,half * MemIy2,half * MemIxIy,half * MemNx,half * MemNy ,int Width, int Height)
 {
 	//===============================================================================================
     //
@@ -478,8 +483,8 @@ __global__ void EigenVectors_Kernel(unsigned short * MemIx2,unsigned short * Mem
 		        v11=0;
 			    v21=0;
 			}
-		    MemNx[GlobalOffset]=__float2half_rn(v11);
-		    MemNy[GlobalOffset]=__float2half_rn(v21);
+		    MemNx[GlobalOffset]=__float2half(v11);
+		    MemNy[GlobalOffset]=__float2half(v21);
 		}
 		else
 	    {
@@ -488,16 +493,16 @@ __global__ void EigenVectors_Kernel(unsigned short * MemIx2,unsigned short * Mem
 			    v12=0;
 			    v22=0;
 			}
-		    MemNx[GlobalOffset]=__float2half_rn(v12);
-		    MemNy[GlobalOffset]=__float2half_rn(v22);
+		    MemNx[GlobalOffset]=__float2half(v12);
+		    MemNy[GlobalOffset]=__float2half(v22);
 		}
     }
 	else
 	{
 		if (globalX>=0 && globalX<(Width) && globalY>=0 && globalY<(Height))
 		{
-		    MemNx[GlobalOffset]= __float2half_rn(0.0f);
-		    MemNy[GlobalOffset]= __float2half_rn(0.0f);
+		    MemNx[GlobalOffset]= __float2half(0.0f);
+		    MemNy[GlobalOffset]= __float2half(0.0f);
 		}
 	}
 }

@@ -36,7 +36,8 @@ private:
 	void Compute_PEigen(int NumScale,bool FirsTime);
 	void Update_OF_Up(int NumScale,int FirstTime,float Theta,float Sigma,int Warped);
 	void Compute_Warping(int NumScale);
-public:
+
+private:
 
 	TGpuMem::TGpuMemHalfFloat  ** MemUPrev;
 	TGpuMem::TGpuMemHalfFloat  ** MemVPrev;

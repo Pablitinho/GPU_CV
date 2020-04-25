@@ -9,7 +9,7 @@
 #define NUMPI 3.14159265358979323846
 #define NUMPI_2 1.57079632679489661923
 //--------------------------------------------------------------------------
-/*inline __device__ void FillCache(volatile float *DataCache, unsigned short * MemSrc, int radius, int Width,  int Height)
+/*inline __device__ void FillCache(volatile float *DataCache, half * MemSrc, int radius, int Width,  int Height)
 {
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
 	int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -235,9 +235,9 @@ inline __device__ float Range(float valorIn, float maxIn, float minIn,float maxO
            return V;
 }
 //==========================================================================
-/*inline __device__ void ReplicatePixels(unsigned short * Mem, float Value,int globalX,int globalY,int GlobalOffset,int Width,int Height)
+/*inline __device__ void ReplicatePixels(half * Mem, float Value,int globalX,int globalY,int GlobalOffset,int Width,int Height)
 {
-	   unsigned short ValueHF=__float2half_rn(Value);
+	   half ValueHF=__float2half_rn(Value);
 	   if (globalX==3 )
 	   {
 		   Mem[GlobalOffset-1]=ValueHF;
@@ -265,9 +265,9 @@ inline __device__ float Range(float valorIn, float maxIn, float minIn,float maxO
 
 }*/
 //--------------------------------------------------------------------------
-inline __device__ void ReplicatePixels(unsigned short * Mem, float Value,int globalX,int globalY,int GlobalOffset,int Width,int Height)
+inline __device__ void ReplicatePixels(half * Mem, float Value,int globalX,int globalY,int GlobalOffset,int Width,int Height)
 {
-	   unsigned short ValueHF=__float2half_rn(Value);
+	   half ValueHF=__float2half(Value);
 	   if (globalX==2 )
 	   {
 		   Mem[GlobalOffset-1]=ValueHF;

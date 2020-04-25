@@ -22,7 +22,9 @@ public:
 	TCVGeometry(void * d_Gpu);
 	void Test(){cout<< "TEST"<<endl;};
 	void Resize(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMem::TGpuMemHalfFloat * MemDst);
+	void ResizeBilinear(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMem::TGpuMemHalfFloat * MemDst);
 	void Resize(TGpuMem::TGpuMemUChar * MemSrc, TGpuMem::TGpuMemUChar * MemDst);
+	void ResizeBilinear(TGpuMem::TGpuMemUChar * MemSrc, TGpuMem::TGpuMemUChar * MemDst);
 	void Warping(TGpuMem::TGpuMemHalfFloat * MemSrc, TGpuMem::TGpuMemHalfFloat * MemDst, TGpuMem::TGpuMemHalfFloat * MemU, TGpuMem::TGpuMemHalfFloat * MemV,bool Inverted);
 	void Warping(TGpuMem::TGpuMemUChar * MemSrc, TGpuMem::TGpuMemUChar * MemDst, TGpuMem::TGpuMemHalfFloat * MemU, TGpuMem::TGpuMemHalfFloat * MemV,bool Inverted);
 

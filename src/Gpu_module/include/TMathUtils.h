@@ -13,7 +13,7 @@
 class SHARED_EXPORT TMathUtils {
 public:
 	TMathUtils();
-	float HalftoFloat(unsigned short in_half);
+	//float HalftoFloat(half in_half);
 	~TMathUtils();
 };
 

@@ -6,13 +6,11 @@
  */
 
 #include "TCVMath.h"
-#include <fstream>
+#include <typeinfo>
+#include "CVCudaUtils.cuh"
 #include <iostream>
 #include <cuda.h>
 #include <cuda_runtime_api.h>
-#include <typeinfo>
-#include "CVCudaUtils.cuh"
-#include <math.h>
 #include "cuda_fp16.h"
 #include "device_launch_parameters.h"
 using namespace std;
@@ -34,7 +32,7 @@ __device__ uint HammingDistance(uint x,uint y)
 
   return dist;
 }
-__global__ void Mult_HF_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void Mult_HF_Kernel(half * MemSrc1, half * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -43,11 +41,11 @@ __global__ void Mult_HF_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc1[GlobalOffset])*__half2float(MemSrc2[GlobalOffset]));
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc1[GlobalOffset])*__half2float(MemSrc2[GlobalOffset]));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Mult_HF_Const_Kernel(unsigned short * MemSrc, float Value, unsigned short * MemDst, int Width, int Height)
+__global__ void Mult_HF_Const_Kernel(half * MemSrc, float Value, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -56,11 +54,11 @@ __global__ void Mult_HF_Const_Kernel(unsigned short * MemSrc, float Value, unsig
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc[GlobalOffset])* Value);
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc[GlobalOffset])* Value);
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Div_HF_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void Div_HF_Kernel(half * MemSrc1, half * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -69,11 +67,11 @@ __global__ void Div_HF_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc1[GlobalOffset])/__half2float(MemSrc2[GlobalOffset]));
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc1[GlobalOffset])/__half2float(MemSrc2[GlobalOffset]));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Div_HF_Const_Kernel(unsigned short * MemSrc, float Value, unsigned short * MemDst, int Width, int Height)
+__global__ void Div_HF_Const_Kernel(half * MemSrc, float Value, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -82,11 +80,11 @@ __global__ void Div_HF_Const_Kernel(unsigned short * MemSrc, float Value, unsign
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc[GlobalOffset])/(Value));
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc[GlobalOffset])/(Value));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Subtract_HF_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void Subtract_HF_Kernel(half * MemSrc1, half * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -95,11 +93,11 @@ __global__ void Subtract_HF_Kernel(unsigned short * MemSrc1, unsigned short * Me
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc1[GlobalOffset])-__half2float(MemSrc2[GlobalOffset]));
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc1[GlobalOffset])-__half2float(MemSrc2[GlobalOffset]));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void SubtractAbs_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void SubtractAbs_Kernel(half * MemSrc1, half * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -108,11 +106,11 @@ __global__ void SubtractAbs_Kernel(unsigned short * MemSrc1, unsigned short * Me
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(abs(__half2float(MemSrc1[GlobalOffset])-__half2float(MemSrc2[GlobalOffset])));
+		MemDst[GlobalOffset]= __float2half(abs(__half2float(MemSrc1[GlobalOffset])-__half2float(MemSrc2[GlobalOffset])));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Subtract_HF_Const_Kernel(unsigned short * MemSrc, float Value, unsigned short * MemDst, int Width, int Height)
+__global__ void Subtract_HF_Const_Kernel(half * MemSrc, float Value, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -121,11 +119,11 @@ __global__ void Subtract_HF_Const_Kernel(unsigned short * MemSrc, float Value, u
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(__half2float(MemSrc[GlobalOffset])-(Value));
+		MemDst[GlobalOffset]= __float2half(__half2float(MemSrc[GlobalOffset])-(Value));
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void Subtract_Kernel(unsigned char * MemSrc1, unsigned char * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void Subtract_Kernel(unsigned char * MemSrc1, unsigned char * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -134,11 +132,11 @@ __global__ void Subtract_Kernel(unsigned char * MemSrc1, unsigned char * MemSrc2
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn( (float)(MemSrc1[GlobalOffset]-MemSrc2[GlobalOffset]) );
+		MemDst[GlobalOffset]= __float2half( (float)(MemSrc1[GlobalOffset]-MemSrc2[GlobalOffset]) );
 	}
 }
 //--------------------------------------------------------------------------
-__global__ void HammingDistance_Kernel(unsigned int * MemSrc1,unsigned int * MemSrc2,unsigned short * MemDst,float Factor,int Width,int Height)
+__global__ void HammingDistance_Kernel(unsigned int * MemSrc1,unsigned int * MemSrc2,half * MemDst,float Factor,int Width,int Height)
 {
    //------------------------------------------------------------------
    int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -157,11 +155,11 @@ __global__ void HammingDistance_Kernel(unsigned int * MemSrc1,unsigned int * Mem
 
 	   HD = (float)HammingDistance(Value1,Value2);
 
-	   MemDst[GlobalOffset] = __float2half_rn(HD*Factor);
+	   MemDst[GlobalOffset] = __float2half(HD*Factor);
    }
 }
 //--------------------------------------------------------------------------
-__global__ void Transpose_Kernel(unsigned short * MemSrc,unsigned short * MemDst,int Width,int Height)
+__global__ void Transpose_Kernel(half * MemSrc,half * MemDst,int Width,int Height)
 {
 	//------------------------------------------------------------------
 	int globalX = blockIdx.x * blockDim.x + threadIdx.x;
@@ -176,7 +174,7 @@ __global__ void Transpose_Kernel(unsigned short * MemSrc,unsigned short * MemDst
     }
 }
 //--------------------------------------------------------------------------
-__global__ void Divergence_Kernel(unsigned short * MemIm1, unsigned short * MemIm2,unsigned short * MemOut,int Width,int Height)
+__global__ void Divergence_Kernel(half * MemIm1, half * MemIm2,half * MemOut,int Width,int Height)
 {
    //===============================================================================================
    //
@@ -206,20 +204,20 @@ __global__ void Divergence_Kernel(unsigned short * MemIm1, unsigned short * MemI
 	   u_y=Center2-N;
 	   float Result = u_x+u_y;
 	   //----------------------------------------------------------------
-	   MemOut[GlobalOffset]=__float2half_rn(Result);
+	   MemOut[GlobalOffset]=__float2half(Result);
 
    }
    else
    {
 		if (globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 		{
-			MemOut[GlobalOffset]= __float2half_rn(0.0f);
+			MemOut[GlobalOffset]= __float2half(0.0f);
 		}
 
    }
 }
 //==========================================================================
-__global__ void FloatMaxMinAvg_Kernel(unsigned short * MemMax,unsigned short * MemMin,unsigned short * MemAvg,unsigned short * MemMaxOut,unsigned short * MemMinOut,unsigned short * MemAvgOut, int Size)
+__global__ void FloatMaxMinAvg_Kernel(half * MemMax,half * MemMin,half * MemAvg,half * MemMaxOut,half * MemMinOut,half * MemAvgOut, int Size)
 {
 	//------------------------------------------------------------------
 	int GlobalOffset = blockIdx.x * blockDim.x + threadIdx.x;
@@ -276,18 +274,18 @@ __global__ void FloatMaxMinAvg_Kernel(unsigned short * MemMax,unsigned short * M
     	if (LocalOffset == 0)
     	{
     		if (!isnan(MaxCache[0]))
-    			MemMaxOut[blockIdx.x] = __float2half_rn(MaxCache[0]);
+    			MemMaxOut[blockIdx.x] = __float2half(MaxCache[0]);
 
     		if (!isnan(MinCache[0]))
-    			MemMinOut[blockIdx.x] = __float2half_rn(MinCache[0]);
+    			MemMinOut[blockIdx.x] = __float2half(MinCache[0]);
 
     		if (!isnan(AvgCache[0]))
-    			MemAvgOut[blockIdx.x] = __float2half_rn(AvgCache[0]);
+    			MemAvgOut[blockIdx.x] = __float2half(AvgCache[0]);
     	}
     }
 }
 //==========================================================================
-__global__ void Norm_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, unsigned short * MemDst, int Width, int Height)
+__global__ void Norm_Kernel(half * MemSrc1, half * MemSrc2, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -298,11 +296,11 @@ __global__ void Norm_Kernel(unsigned short * MemSrc1, unsigned short * MemSrc2, 
 	{
 		float fx=__half2float(MemSrc1[GlobalOffset]);
 		float fy=__half2float(MemSrc2[GlobalOffset]);
-		MemDst[GlobalOffset]= __float2half_rn(sqrt(fx*fx+fy*fy));
+		MemDst[GlobalOffset]= __float2half(sqrt(fx*fx+fy*fy));
 	}
 }
 //==========================================================================
-__global__ void Range_Kernel(unsigned short * MemSrc, unsigned short * MemDst, float MaxIn,float MinIn,float MaxOut,float MinOut,int Width, int Height)
+__global__ void Range_Kernel(half * MemSrc, half * MemDst, float MaxIn,float MinIn,float MaxOut,float MinOut,int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -314,11 +312,11 @@ __global__ void Range_Kernel(unsigned short * MemSrc, unsigned short * MemDst, f
 		float Value=__half2float(MemSrc[GlobalOffset]);
 		Value= Range_Value(Value, MaxIn, MinIn,MaxOut,MinOut);
 
-		MemDst[GlobalOffset]= __float2half_rn(Value);
+		MemDst[GlobalOffset]= __float2half(Value);
 	}
 }
 //==========================================================================
-__global__ void Abs_Kernel(unsigned short * MemSrc, unsigned short * MemDst, int Width, int Height)
+__global__ void Abs_Kernel(half * MemSrc, half * MemDst, int Width, int Height)
 {   //------------------------------------------------------------------
     int globalX = blockIdx.x * blockDim.x + threadIdx.x;
     int globalY = blockIdx.y * blockDim.y + threadIdx.y;
@@ -327,7 +325,7 @@ __global__ void Abs_Kernel(unsigned short * MemSrc, unsigned short * MemDst, int
     //------------------------------------------------------------------
 	if(globalX>=0 && globalY>=0 && globalX<Width && globalY<Height)
 	{
-		MemDst[GlobalOffset]= __float2half_rn(abs(__half2float(MemSrc[GlobalOffset])));
+		MemDst[GlobalOffset]= __float2half(abs(__half2float(MemSrc[GlobalOffset])));
 	}
 }
 //--------------------------------------------------------------------------

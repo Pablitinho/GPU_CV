@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include <stdexcept>
 #include "types_cc.h"
-
+#include "cuda_fp16.h"
 using namespace std;
 
 #ifndef TGPUMEM_H_
@@ -28,8 +28,7 @@ public:
 
 		void CopyToDevice(void *h_Mem);
 		void * CopyFromDevice();
-		//void WriteFileFromDevice(const char * File);
-		void WriteFileToDevice(const char * File);
+		//void WriteFileToDevice(const char * File);
 		uint Width(){ return d_Width; };
 		uint Height(){ return d_Height; };
 		uint Channels(){return d_Channels;};
@@ -124,10 +123,10 @@ public:
 	public:
 
 		TGpuMemHalfFloat(void *Gpu_,uint Width,uint Height,uint Channels, bool use_zero_copy_);
-		void CopyToDevice(unsigned short *h_Mem);
+		void CopyToDevice(half *h_Mem);
 		float *CopyFromDevice();
-		void SetMem(unsigned short * Mem_);
-		unsigned short* GetMemory();
+		void SetMem(half * Mem_);
+		half* GetMemory();
 		void Init(float value);
 		void Copy(TGpuMemHalfFloat * MemDst);
 		void WriteFileFromDevice(const char * File);
