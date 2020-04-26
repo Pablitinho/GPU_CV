@@ -162,14 +162,15 @@ int main(void)
 	cout << "Device ID: " << myGpu->GetDevice() << endl;
 	myGpu->PrintProperties(0);
 
-	//Mat im_rgb_host_opticalflow_0 = imread("..\\data\\Hydrangea\\frame10.png", IMREAD_UNCHANGED);
-	//Mat im_rgb_host_opticalflow_1 = imread("..\\data\\Hydrangea\\frame11.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_opticalflow_0 = imread("..\\data\\Hydrangea\\frame10.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_opticalflow_1 = imread("..\\data\\Hydrangea\\frame11.png", IMREAD_UNCHANGED);
 
-	//opticalFlow(myGpu, im_rgb_host_opticalflow_0, im_rgb_host_opticalflow_1);
+	opticalFlow(myGpu, im_rgb_host_opticalflow_0, im_rgb_host_opticalflow_1);
 
-	Mat im_rgb_host_stereo_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
-	Mat im_rgb_host_stereo_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_stereo_0 = imread("..\\data\\piano\\frame8.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_stereo_1 = imread("..\\data\\piano\\frame9.png", IMREAD_UNCHANGED);
 	stereo(myGpu, im_rgb_host_stereo_0, im_rgb_host_stereo_1);
+
 	delete myGpu;
 
 	return 0;

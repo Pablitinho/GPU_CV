@@ -1,7 +1,8 @@
 # GPU_CV
 Cuda Framework for Computer Vision
 
-Optical Flow: 
+**Optical Flow:** 
+
 ![alt text][of_army_data]
 ![alt text][of_army]
 ![alt text][of_hydrangea_data]
@@ -17,9 +18,16 @@ Optical Flow:
 [of_walking_data]: ./data/Walking/frame10.png "walking"
 [of_walking]: ./results/walking.JPG "walking"
 
-Stereo: 
+**Stereo:** 
+
 ![alt text][of_dolls_data]
 ![alt text][of_dolls]
 
+![alt text][of_piano_data]
+
+![alt text][of_piano]
+
 [of_dolls_data]: ./data/dolls/frame8.png "Dolls"
-[of_dolls]: ./results/dolls.JPG "Army"
+[of_dolls]: ./results/dolls.JPG "Dolls"
+[of_piano_data]: ./data/piano/frame8.png "Piano"
+[of_piano]: ./results/piano.JPG "Piano"
