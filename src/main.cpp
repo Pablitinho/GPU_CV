@@ -100,9 +100,9 @@ void opticalFlow(TGpu *myGpu,Mat im_rgb_host_0,Mat im_rgb_host_1)
 	myGpu->CV->ColorSpace->RgbToGray(im_rgb_device_1, im_gray_hf_device_1);
 
 	// Create pyramid
-	myGpu->CV->Motion->InitPyramid(6, 20, 0.5, im_rgb_host_0.cols, im_rgb_host_0.rows);
+	myGpu->CV->Motion->InitPyramid(10, 20, 0.5, im_rgb_host_0.cols, im_rgb_host_0.rows);
 	// Comput Optical flow
-	myGpu->CV->Motion->AniTVL1(im_gray_hf_device_0, im_gray_hf_device_1, U, V, 150, 2, 0.6, 0.3, false);
+	myGpu->CV->Motion->AniTVL1(im_gray_hf_device_0, im_gray_hf_device_1, U, V, 150, 2, 0.7, 0.6, false);
 	// Convert optical flow to color
 	myGpu->CV->Utils->OpticalFlowToColor(U, V, opticalFlow, 0.5);
 	// Copy from device
@@ -162,14 +162,14 @@ int main(void)
 	cout << "Device ID: " << myGpu->GetDevice() << endl;
 	myGpu->PrintProperties(0);
 
-	Mat im_rgb_host_opticalflow_0 = imread("..\\data\\MiniCooper\\frame10.png", IMREAD_UNCHANGED);
-	Mat im_rgb_host_opticalflow_1 = imread("..\\data\\MiniCooper\\frame11.png", IMREAD_UNCHANGED);
+	//Mat im_rgb_host_opticalflow_0 = imread("..\\data\\Hydrangea\\frame10.png", IMREAD_UNCHANGED);
+	//Mat im_rgb_host_opticalflow_1 = imread("..\\data\\Hydrangea\\frame11.png", IMREAD_UNCHANGED);
 
-	opticalFlow(myGpu, im_rgb_host_opticalflow_0, im_rgb_host_opticalflow_1);
+	//opticalFlow(myGpu, im_rgb_host_opticalflow_0, im_rgb_host_opticalflow_1);
 
-	//Mat im_rgb_host_stereo_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
-	//Mat im_rgb_host_stereo_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
-	//stereo(myGpu, im_rgb_host_stereo_0, im_rgb_host_stereo_1);
+	Mat im_rgb_host_stereo_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_stereo_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
+	stereo(myGpu, im_rgb_host_stereo_0, im_rgb_host_stereo_1);
 	delete myGpu;
 
 	return 0;
