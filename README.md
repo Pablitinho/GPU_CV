@@ -7,7 +7,8 @@ Cuda Framework for Computer Vision
 ![alt text][of_army]
 ![alt text][of_hydrangea_data]
 ![alt text][of_hydrangea]
-
+![alt text][of_walking_data]
+![alt text][of_walking]
 
 [of_army_data]: ./data/Army/frame10.png "Army"
 [of_army]: ./results/army.JPG "Army"
