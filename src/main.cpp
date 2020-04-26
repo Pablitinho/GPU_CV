@@ -73,10 +73,9 @@ void imageResize(TGpu *myGpu)
 	delete im_gray_device;
 }
 //-------------------------------------------------------------------------------------------------------------------
-void opticalFlow(TGpu *myGpu)
+void opticalFlow(TGpu *myGpu,Mat im_rgb_host_0,Mat im_rgb_host_1)
 {
-	Mat im_rgb_host_0 = imread("..\\data\\Army\\frame10.png", IMREAD_UNCHANGED);
-	Mat im_rgb_host_1 = imread("..\\data\\Army\\frame11.png", IMREAD_UNCHANGED);
+
 	Mat opticalFlowMat(im_rgb_host_0.rows, im_rgb_host_0.cols, CV_8UC(3));
 
 	TGpuMem::TGpuMemUChar * im_gray_device = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_1.cols, im_rgb_host_1.rows, 1, false);
@@ -115,10 +114,9 @@ void opticalFlow(TGpu *myGpu)
 	waitKey(0);
 }
 
-void stereo(TGpu *myGpu)
+void stereo(TGpu *myGpu,Mat im_rgb_host_0, Mat im_rgb_host_1)
 {
-	Mat im_rgb_host_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
-	Mat im_rgb_host_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
+
 	Mat disparity_host(im_rgb_host_0.rows, im_rgb_host_0.cols, CV_8UC(1));
 
 	TGpuMem::TGpuMemUChar * im_rgb_device_0 = new TGpuMem::TGpuMemUChar(myGpu, im_rgb_host_0.cols, im_rgb_host_0.rows, 3, false);
@@ -164,9 +162,14 @@ int main(void)
 	cout << "Device ID: " << myGpu->GetDevice() << endl;
 	myGpu->PrintProperties(0);
 
-	//imageResize(myGpu);
-	//opticalFlow(myGpu);
-	stereo(myGpu);
+	Mat im_rgb_host_opticalflow_0 = imread("..\\data\\MiniCooper\\frame10.png", IMREAD_UNCHANGED);
+	Mat im_rgb_host_opticalflow_1 = imread("..\\data\\MiniCooper\\frame11.png", IMREAD_UNCHANGED);
+
+	opticalFlow(myGpu, im_rgb_host_opticalflow_0, im_rgb_host_opticalflow_1);
+
+	//Mat im_rgb_host_stereo_0 = imread("..\\data\\dolls\\frame8.png", IMREAD_UNCHANGED);
+	//Mat im_rgb_host_stereo_1 = imread("..\\data\\dolls\\frame9.png", IMREAD_UNCHANGED);
+	//stereo(myGpu, im_rgb_host_stereo_0, im_rgb_host_stereo_1);
 	delete myGpu;
 
 	return 0;
