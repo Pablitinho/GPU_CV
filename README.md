@@ -4,11 +4,13 @@ Cuda Framework for Computer Vision
 **Optical Flow:** 
 
 *Videos*
+
 [![Flujo Optico Daylight](https://img.youtube.com/vi/yUOvKVBOEYM/0.jpg)](https://www.youtube.com/watch?v=yUOvKVBOEYM&ab_channel=Pablitinho00)
 
 [![Flujo Optico Roundabout](https://img.youtube.com/vi/pMAXdkSaIIw/0.jpg)](https://www.youtube.com/watch?v=pMAXdkSaIIw&ab_channel=Pablitinho00)
 
 *Images*
+
 ![alt text][of_army_data]
 ![alt text][of_army]
 ![alt text][of_hydrangea_data]
