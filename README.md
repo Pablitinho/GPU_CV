@@ -3,18 +3,12 @@ Cuda Framework for Computer Vision
 
 **Optical Flow:** 
 
-
+*Videos*
 [![Flujo Optico Daylight](https://img.youtube.com/vi/yUOvKVBOEYM/0.jpg)](https://www.youtube.com/watch?v=yUOvKVBOEYM&ab_channel=Pablitinho00)
 
 [![Flujo Optico Roundabout](https://img.youtube.com/vi/pMAXdkSaIIw/0.jpg)](https://www.youtube.com/watch?v=pMAXdkSaIIw&ab_channel=Pablitinho00)
 
-<object width="480" height="385">
-<param name="movie" value="https://www.youtube.com/watch?v=yUOvKVBOEYM&ab_channel=Pablitinho00">
-</param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param>
-<embed src="https://www.youtube.com/watch?v=yUOvKVBOEYM&ab_channel=Pablitinho00" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385">
-</embed>
-</object>
-
+*Images*
 ![alt text][of_army_data]
 ![alt text][of_army]
 ![alt text][of_hydrangea_data]
@@ -34,11 +28,11 @@ Cuda Framework for Computer Vision
 
 **Stereo:** 
 
+*Images*
+
 ![alt text][of_dolls_data]
 ![alt text][of_dolls]
-
 ![alt text][of_piano_data]
-
 ![alt text][of_piano]
 
 [of_dolls_data]: ./data/dolls/frame8.png "Dolls"
